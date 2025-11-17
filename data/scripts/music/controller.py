@@ -1,7 +1,7 @@
 import numpy as np
 import pygame
 
-from data.sprite import Sprite
+from data.scripts.sprite import Sprite
 from .node import Node
 
 from data.scripts.asset_magare import AssetManager
@@ -119,7 +119,7 @@ class Controller:
         self.max_strength = max_strength
         self.dir = np.array((0.0, 1.0))
         self.hit_line_y = hit_line_y
-        #self.finished = False
+        # self.finished = False
 
         self.img = self.assets.images["notes"][note + ".png"]
 
@@ -154,12 +154,12 @@ class Controller:
         self.btn.update((-self.start_pos[0], 0))
 
     def render(self, surf):
-        pygame.draw.line(
-            surf, "white", (0, self.hit_line_y), (self.game.w, self.hit_line_y)
-        )
-        pygame.draw.line(
-            surf, "blue", (100, self.hit_line_y - 20), (100, self.hit_line_y + 20)
-        )
+        # pygame.draw.line(
+        #     surf, "white", (0, self.hit_line_y), (self.game.w, self.hit_line_y)
+        # )
+        # pygame.draw.line(
+        #     surf, "blue", (100, self.hit_line_y - 20), (100, self.hit_line_y + 20)
+        # )
         for node in self.nodes[::-1]:
             node.render(surf, (-self.start_pos[0], 0))
         self.btn.render(surf, (0, 0))

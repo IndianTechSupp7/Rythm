@@ -31,6 +31,9 @@ class AssetManager:
         self.beatmaps = {
             i.split("\\")[-1]: get_json(i) for i in self.search(("json"), "\\beatmaps")
         }
+        self.shaders = {
+            i.split("\\")[-1]: i for i in self.search((".glsl"), "/shaders")
+        }
 
     def search(self, exts: list | tuple, base=""):
         path = self.BASE_ASSETS_FOLDER + base

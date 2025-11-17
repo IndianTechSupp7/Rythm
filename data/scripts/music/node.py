@@ -2,7 +2,7 @@ import numpy as np
 import pygame
 
 from data.scripts.utilities import move_towards
-from data.sprite import Sprite
+from data.scripts.sprite import Sprite
 
 HIT_THRASHOLD = 20
 
@@ -55,7 +55,7 @@ class Node:
             # else:
             #     self.good = False
 
-            if self.pos[1] > 0:
+            if self.pos[1] > 30:
                 self.scale = move_towards(
                     self.scale, self.scale_target, self.scale_speed, 1
                 )

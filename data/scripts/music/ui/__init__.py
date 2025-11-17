@@ -1,6 +1,6 @@
 import pygame
 from data.scripts.utilities import rplc_color
-from data.sprite import Sprite
+from data.scripts.sprite import Sprite
 from .letter import RandLetter
 
 

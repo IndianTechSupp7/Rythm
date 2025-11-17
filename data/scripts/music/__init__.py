@@ -1,6 +1,8 @@
 from ast import Not
 import time
+from typing import Text
 import pygame
+from pygame_shaders import Shader, DEFAULT_VERTEX_SHADER, Texture
 from data.scripts.asset_magare import AssetManager
 from data.scripts.music.ui import UI
 from data.scripts.scene import Scene
@@ -19,22 +21,25 @@ Anyám mondta
             self.min_strgs = {"tom": 0.1, "kick": 0.2, "cym": 0.1, "snr": 0.4}
             self.max_strgs = {"tom": 0.5, "kick": 1.0, "cym": 0.5, "snr": 1.0}
 
-            
+Apologize 
+            self.min_strgs = {"tom": 0.4, "kick": 0.2, "cym": 0.4, "snr": 0.4}
+            self.max_strgs = {"tom": 0.6, "kick": 1.0, "cym": 0.8, "snr": 0.7}
+
+The Night Begins to Shine        
+            self.min_strgs = {"tom": 0.4, "kick": 0.2, "cym": 0.4, "snr": 0.4}
+            self.max_strgs = {"tom": 0.6, "kick": 1.0, "cym": 0.8, "snr": 0.7}    
 
 """
 
 
 class Music(Scene):
-    def setup(self, game):
+    def setup(self):
         self.is_paused = False
 
-        self.game = game
-        self.assets: AssetManager = game.assets
+        # self.assets: AssetManager = self.game.assets
         self.center = self.game.center
 
-        self.surf = self.game.display.copy()
-
-        self.current_song_name = "Anyám mondta"
+        self.current_song_name = "The Night Begins to Shine"
 
         self.current_beatmap = self.assets.beatmaps[self.current_song_name + ".json"]
         self.start_time = time.time()
@@ -46,17 +51,17 @@ class Music(Scene):
         # )
 
         self.full_time = 0
-        self.min_strgs = {"tom": 0.1, "kick": 0.2, "cym": 0.1, "snr": 0.4}
-        self.max_strgs = {"tom": 0.5, "kick": 1.0, "cym": 0.5, "snr": 1.0}
+        self.min_strgs = {"tom": 0.4, "kick": 0.2, "cym": 0.4, "snr": 0.4}
+        self.max_strgs = {"tom": 0.6, "kick": 1.0, "cym": 0.8, "snr": 0.7}
 
         self.hit_line_y = self.center[1] + 130
         self.finished = False
 
         row = [((i * 32) + NOTE_SPACING) for i in range(4)]
         row = [self.center[0] - (i - ((4 * 32 + NOTE_SPACING) / 2)) for i in row][::-1]
-        print(row)
+
         self.tom = Controller(
-            self.game,
+            self,
             self.current_beatmap["tracks"]["Tom"],
             # (self.center[0] - NOTE_SPACING, Y_OFFSET),
             (row[0], Y_OFFSET),
@@ -67,7 +72,7 @@ class Music(Scene):
             note="tom",
         )
         self.kick = Controller(
-            self.game,
+            self,
             self.current_beatmap["tracks"]["Kick"],
             # (self.center[0], Y_OFFSET),
             (row[1], Y_OFFSET),
@@ -78,7 +83,7 @@ class Music(Scene):
             note="kick",
         )
         self.snare = Controller(
-            self.game,
+            self,
             self.current_beatmap["tracks"]["Snare"],
             # (self.center[0] + NOTE_SPACING, Y_OFFSET),
             (row[2], Y_OFFSET),
@@ -89,7 +94,7 @@ class Music(Scene):
             note="snr",
         )
         self.cym = Controller(
-            self.game,
+            self,
             self.current_beatmap["tracks"]["Cymbal"],
             # (self.center[0] + NOTE_SPACING * 2, Y_OFFSET),
             (row[3], Y_OFFSET),
@@ -108,13 +113,35 @@ class Music(Scene):
                 len(self.cym.nodes),
             ),
         )
+
         self.ui = UI(self)
+        self.background = pygame.Surface(self.surf.get_size())
+        self.setup_bg()
+        self.bg_shader = Shader(
+            DEFAULT_VERTEX_SHADER, self.assets.shaders["music_bg.glsl"], self.surf
+        )
+        self.noise_texture = Texture(
+            self.assets.images["noise.png"], self.bg_shader.ctx
+        )
+        self.bg_texture = Texture(self.background, self.bg_shader.ctx)
+
+        # self.bright = Shader(DEFAULT_VERTEX_SHADER, "bright.glsl", self.surf)
+        # self.blur = Shader(DEFAULT_VERTEX_SHADER, "blur.glsl", self.surf)
+        # self.combine = Shader(DEFAULT_VERTEX_SHADER, "combine.glsl", self.surf)
+
+        # self.bright_tex = Texture(pygame.Surface(self.size), self.bright.ctx)
+        # self.blur_tex = Texture(pygame.Surface(self.size), self.blur.ctx)
+        # self.final_tex = Texture(pygame.Surface(self.size), self.combine.ctx)
 
         pygame.mixer.music.load(self.assets.sfx[self.current_beatmap["song"]])
         pygame.mixer.music.play()
 
-        self.game.input.add_callback("menu", self.pause, "press")
+        self.input.add_callback("menu", self.pause, "press")
         # self.game.input.add_callback("menu", self.active, "press")
+
+    def reset(self):
+        pygame.mixer.music.play()
+        self.start_time = time.time()
 
     def pause(self):
         self.is_paused = not self.is_paused
@@ -122,9 +149,13 @@ class Music(Scene):
             pygame.mixer.music.pause()
         else:
             pygame.mixer.music.unpause()
+        Scene.change_scene("Desktop")
 
     def update(self, dt, **kwargs):
         if not self.is_paused:
+            # self.surf.fill("#1f102a")
+            # self.surf.blit(self.background, (0, 0))
+
             self.surf.fill((0, 0, 0, 0))
 
             self.full_time = len(Node.triggered) / (self.all_beats * BEAT_TOLERANCE)
@@ -150,4 +181,24 @@ class Music(Scene):
             self.ui.update()
             self.ui.render(self.surf)
 
-        return self.surf
+            self.noise_texture.use(1)
+            self.bg_texture.use(2)
+            self.bg_shader.send("noiseTexture", 1)
+            self.bg_shader.send("bgTexture", 2)
+            self.bg_shader.send("time", self.current_time)
+
+        return self.bg_shader.render()
+
+    def setup_bg(self):
+        ROW = 10
+        ROW_WIDTH = self.background.width / ROW
+        LINE_WIDTH = 1
+        self.background.fill("#1f102a")
+        for i in range(ROW):
+            pygame.draw.line(
+                self.background,
+                "#390947",
+                (i * ROW_WIDTH, 0),
+                (i * ROW_WIDTH, self.background.height),
+                LINE_WIDTH,
+            )
