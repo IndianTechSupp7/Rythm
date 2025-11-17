@@ -57,8 +57,12 @@ class Music(Scene):
         # )
 
         self.full_time = 0
-        self.min_strgs = {"tom": 0.3, "kick": 0.2, "cym": 0.4, "snr": 0.4}
-        self.max_strgs = {"tom": 0.4, "kick": 1.0, "cym": 0.8, "snr": 0.7}
+        self.min_strgs = (
+            self.current_beatmap.get("min") or self.assets.configs["level"]["min"]
+        )
+        self.max_strgs = (
+            self.current_beatmap.get("max") or self.assets.configs["level"]["max"]
+        )
 
         self.hit_line_y = self.center[1] + 130
         self.finished = False

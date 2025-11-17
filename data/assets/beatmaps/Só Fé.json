@@ -1,5 +1,7 @@
 {
     "song": "S\u00f3 F\u00e9.mp3",
+    "min": {"tom": 0.3, "kick": 0.2, "cym": 0.4, "snr": 0.4},
+    "max": {"tom": 0.4, "kick": 1.0, "cym": 0.8, "snr": 0.7},
     "bpm": 135.99917763157896,
     "sample_rate": 22050,
     "tracks": {

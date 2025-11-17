@@ -42,7 +42,7 @@ def lerp(a, b, t):
 
 
 def get_json(path):
-    with open(path, "r") as file:
+    with open(path, "r", encoding="utf-8") as file:
         data = json.load(file)
     return data
 
