@@ -2,6 +2,7 @@ import numpy as np
 import pygame
 
 from data.scripts.sprite import Sprite
+from data.scripts.utilities import bezier
 from .node import Node
 
 from data.scripts.asset_magare import AssetManager
@@ -87,7 +88,7 @@ class Btn:
         # self.current_state = self.sheet[0]
 
     def render(self, surf, offset):
-        self.current_state.render(surf, self.pos, self.anchor_point)
+        self.current_state.render(surf, self.pos - offset, self.anchor_point)
         # surf.blit(
         #     self.current_state,
         #     self.pos - self.rect.center + (self.rect.center * self.anchor_point),
@@ -142,8 +143,9 @@ class Controller:
             pos=(self.start_pos[0], self.hit_line_y),
             key=self.note,
             sheet=self.assets.images[self.note],
-            anchor_point=(0, 1),
+            anchor_point=(0, 0.5),
         )
+        self.entering = abs(self.center[0] - self.start_pos[0]) * 0.01
 
     def update(self, dt, current_time):
         for node in self.nodes:
@@ -155,11 +157,13 @@ class Controller:
 
     def render(self, surf):
         # pygame.draw.line(
-        #     surf, "white", (0, self.hit_line_y), (self.game.w, self.hit_line_y)
+        #     surf, "white", (0, self.hit_line_y), (self.game.game.w, self.hit_line_y)
         # )
         # pygame.draw.line(
         #     surf, "blue", (100, self.hit_line_y - 20), (100, self.hit_line_y + 20)
         # )
+        self.entering = max(0, min(1, self.entering + 0.03))
+        e = 1 - bezier(0.187, 0.627, 0.762, 1.256, self.entering)[1]
         for node in self.nodes[::-1]:
             node.render(surf, (-self.start_pos[0], 0))
-        self.btn.render(surf, (0, 0))
+        self.btn.render(surf, (0, -(e * 70)))

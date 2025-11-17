@@ -13,6 +13,7 @@ void main() {
     vec2 uv = fragmentTexCoord.xy;
     vec2 noise = texture(noiseTexture, uv + time * 0.1).xy;
     vec3 bg = texture(bgTexture, (uv + noise * 0.02)).rgb;
+    float blue_blend = min(time, 2.0) / 2.0;
 
     vec3 colorSum = vec3(0.0);
     float totalWeight = 0.0;
@@ -26,14 +27,15 @@ void main() {
 
             vec3 col = texture(imageTexture, uv + vec2(x, y) / 1000.0).rgb;
 
-            colorSum += col * weight*0.2;
+            colorSum += col * weight * 0.25;
             totalWeight += weight;
         }
     }
 
     vec3 blurredRGB = colorSum / totalWeight;
     vec4 tex = texture(imageTexture, uv);
-    gl_FragColor = vec4((blurredRGB + bg) * (1.0 - tex.a) + tex.rgb, 1.0);
+    //vec3 n_bg = bg + vec3(0.0, 0.0, 1.0) * blue_blend * 0.1 * length(uv - vec2(.5, 0.)) * 0.8;
+    gl_FragColor = vec4((blurredRGB + bg) * (1.0 - tex.a) + tex.rgb + vec3(0.0, 0.0, 1.0) * blue_blend * 0.1 * length(uv - vec2(.5, 0.)) * 0.8, 1.0);
     //gl_FragColor = vec4(blurredRGB + tex.rgb + bg, 1.0);
     //gl_FragColor = vec4(pow(uv.y, 4), 0., 0., 0.);
 }//texture2D(imageTexture, (uv + noise)).xyz

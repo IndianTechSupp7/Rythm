@@ -5,7 +5,7 @@ import pygame
 class Input:
     def __init__(self, app):
         self.assets = app.assets
-        self.binds = self.assets.binds
+        self.binds = self.assets.configs["binds"]
         self.callbacks = {"press": {}, "release": {}, "hold": {}}
 
     def add_callback(

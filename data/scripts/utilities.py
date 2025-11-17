@@ -4,6 +4,12 @@ import numpy as np
 import pygame
 
 
+def bezier(a: float, b: float, c: float, d: float, t: float):
+    # return a * (1 - t)**3 + 3*b * (1 - t)**2*t + 3*c * (1-t)*t**2 + d*t**3
+    x = (1 - t)**3 * 0 + t*a*(3*(1-t)**2) + c*(3*(1-t)*t**2) + 1*t**3
+    y = (1 - t)**3 * 0 + t*b*(3*(1-t)**2) + d*(3*(1-t)*t**2) + 1*t**3
+    return x, y
+
 def move_towards(x, target, speed, dt):
     diff = target - x
     if abs(diff) <= speed * dt:
@@ -26,6 +32,10 @@ def rplc_color(surf: pygame.Surface, prev_c, new_c):
 
     return surf
 
+def lerp_color(a, b, t):
+    a = pygame.Color(a)
+    return pygame.Color(b).lerp(a, t)
+    # return lerp(a.r, b.r, t), lerp(a.g, b.g, t), lerp(a.b, b.b, t)
 
 def lerp(a, b, t):
     return a + (b - a) * t

@@ -1,7 +1,9 @@
 import pygame
-from data.scripts.utilities import rplc_color
+from data.scripts.utilities import lerp_color, rplc_color
 from data.scripts.sprite import Sprite
 from .letter import RandLetter
+
+BG_ANIM_TIME = 1
 
 
 class UI:
@@ -30,7 +32,15 @@ class UI:
         self.counter += 1
 
         if self.counter % 5 == 0:
-            self.text_sprite.surf = self.rndl.render(self.text, "white")
+            self.text_sprite.surf = self.rndl.render(
+                self.text,
+                "white",
+                lerp_color(
+                    "#25246b",
+                    "#751756",
+                    min(self.music.current_time, BG_ANIM_TIME) / BG_ANIM_TIME,
+                ),
+            )
             # self.rnd_sprite.surf = self.rndl.render(self.text[self.index :], "#751756")
         self.index = int(len(self.base_text) * self.music.full_time)
         self.text = [

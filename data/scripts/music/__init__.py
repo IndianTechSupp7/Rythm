@@ -6,6 +6,7 @@ from pygame_shaders import Shader, DEFAULT_VERTEX_SHADER, Texture
 from data.scripts.asset_magare import AssetManager
 from data.scripts.music.ui import UI
 from data.scripts.scene import Scene
+from data.scripts.utilities import lerp_color
 from .node import Node
 from .controller import Controller
 
@@ -25,9 +26,14 @@ Apologize
             self.min_strgs = {"tom": 0.4, "kick": 0.2, "cym": 0.4, "snr": 0.4}
             self.max_strgs = {"tom": 0.6, "kick": 1.0, "cym": 0.8, "snr": 0.7}
 
-The Night Begins to Shine        
+The Night Begins to Shine   
+     
             self.min_strgs = {"tom": 0.4, "kick": 0.2, "cym": 0.4, "snr": 0.4}
             self.max_strgs = {"tom": 0.6, "kick": 1.0, "cym": 0.8, "snr": 0.7}    
+
+Rakpart
+            self.min_strgs = {"tom": 0.3, "kick": 0.2, "cym": 0.4, "snr": 0.4}
+            self.max_strgs = {"tom": 0.4, "kick": 1.0, "cym": 0.8, "snr": 0.7}
 
 """
 
@@ -39,7 +45,7 @@ class Music(Scene):
         # self.assets: AssetManager = self.game.assets
         self.center = self.game.center
 
-        self.current_song_name = "The Night Begins to Shine"
+        self.current_song_name = self.assets.configs["level"]["song"]
 
         self.current_beatmap = self.assets.beatmaps[self.current_song_name + ".json"]
         self.start_time = time.time()
@@ -51,8 +57,8 @@ class Music(Scene):
         # )
 
         self.full_time = 0
-        self.min_strgs = {"tom": 0.4, "kick": 0.2, "cym": 0.4, "snr": 0.4}
-        self.max_strgs = {"tom": 0.6, "kick": 1.0, "cym": 0.8, "snr": 0.7}
+        self.min_strgs = {"tom": 0.3, "kick": 0.2, "cym": 0.4, "snr": 0.4}
+        self.max_strgs = {"tom": 0.4, "kick": 1.0, "cym": 0.8, "snr": 0.7}
 
         self.hit_line_y = self.center[1] + 130
         self.finished = False
@@ -193,10 +199,16 @@ class Music(Scene):
         ROW = 10
         ROW_WIDTH = self.background.width / ROW
         LINE_WIDTH = 1
+        BG_ANIM_TIME = 1
+        # print(min(self.current_time, 10) / 10)
+        # self.background.fill(
+        #     lerp_color("#11112a", "#1f102a", min(self.current_time, BG_ANIM_TIME) / BG_ANIM_TIME)
+        # )
         self.background.fill("#1f102a")
         for i in range(ROW):
             pygame.draw.line(
                 self.background,
+                # lerp_color("#1e1443", "#390947", min(self.current_time, BG_ANIM_TIME) / BG_ANIM_TIME),
                 "#390947",
                 (i * ROW_WIDTH, 0),
                 (i * ROW_WIDTH, self.background.height),

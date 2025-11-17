@@ -1,5 +1,5 @@
 import pygame
-from data.scripts.utilities import Font, rplc_color
+from data.scripts.utilities import Font, lerp_color, rplc_color
 import random
 
 
@@ -12,7 +12,7 @@ class RandLetter(Font):
         self.is_fixed = 0
         self.spacing = 3
 
-    def render(self, text, color="white"):
+    def render(self, text, color="white", secoundary="#751756"):
         x_offset = 0
 
         full_width = sum(
@@ -33,7 +33,7 @@ class RandLetter(Font):
         for char in text:
             if char == "#":
                 choice = random.choice(self.character_order)
-                cr = rplc_color(self.characters[choice], "red", "#751756")
+                cr = rplc_color(self.characters[choice], "red", secoundary)
                 surf.blit(cr, (x_offset, 0))
                 x_offset += self.characters[choice].get_width() + self.spacing
             elif char != " ":

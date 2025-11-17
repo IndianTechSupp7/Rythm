@@ -20,7 +20,12 @@ class AssetManager:
 
     def __init__(self):
         self.sfx = {i.split("\\")[-1]: i for i in self.search((".mp3"), "/sfx")}
-        self.binds = get_json(self.BASE_ASSETS_FOLDER + "\\binds.json")
+        self.configs = {
+            i.split("\\")[-1].split(".")[0]: get_json(i)
+            for i in self.search((".json"), "/config")
+        }
+        # self.binds = get_json(self.BASE_ASSETS_FOLDER + "\\binds.json")
+        # self.binds = get_json(self.BASE_ASSETS_FOLDER + "\\level.json")
         self.images = {}
         for i in self.search((".png"), "\\images"):
             add_item(

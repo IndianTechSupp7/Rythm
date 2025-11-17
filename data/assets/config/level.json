@@ -1,0 +1,5 @@
+{
+  "song": "Rakpart",
+  "max": {"tom": 0.3, "kick": 0.2, "cym": 0.4, "snr": 0.4},
+  "min": {"tom": 0.4, "kick": 1.0, "cym": 0.8, "snr": 0.7}
+}
