@@ -1,4 +1,5 @@
 import pygame
+from data.scripts.desktop.desktop import DesktopGrid
 from data.scripts.scene import Scene
 
 
@@ -6,13 +7,14 @@ class Desktop(Scene):
     def setup(self, **kwargs):
         self.input.add_callback("menu", lambda: print("Hello WOrld"))
 
+        self.desktop = DesktopGrid(self)
+
         self.btn = pygame.Rect((100, 100, 100, 100))
 
     def update(self, **kwargs):
-        self.surf.fill("black")
+        self.surf.fill("brown")
 
-        if self.btn.collidepoint(self.mouse["pos"]) and self.mouse["press"][0]:
-            Scene.change_scene("Music")
-        pygame.draw.rect(self.surf, "blue", self.btn)
+        self.desktop.update()
+        self.desktop.render(self.surf)
 
         return self.surf

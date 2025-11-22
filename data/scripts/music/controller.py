@@ -144,10 +144,8 @@ class Controller:
         # if self.nodes[-1].triggered:
         #     self.finished = True
         nodes = Node.get_collide_rects(self.nodes)
-        if self.note == "tom":
-            print(len(nodes))
-        self.btn.update((-self.start_pos[0], 0), nodes)
 
+        self.btn.update((-self.start_pos[0], 0), nodes)
     def render(self, surf):
         # pygame.draw.line(
         #     surf, "white", (0, self.hit_line_y), (self.game.game.w, self.hit_line_y)
