@@ -7,7 +7,8 @@ uniform sampler2D imageTexture;
 uniform sampler2D noiseTexture;
 uniform sampler2D bgTexture;
 uniform float time;
-uniform float radius = 30;
+uniform float radius = 7;
+uniform vec3 vg_color = vec3(1.0, 0.0, 0.0);
 
 void main() {
     vec2 uv = fragmentTexCoord.xy;
@@ -27,7 +28,7 @@ void main() {
 
             vec3 col = texture(imageTexture, uv + vec2(x, y) / 1000.0).rgb;
 
-            colorSum += col * weight * 0.25;
+            colorSum += col * weight * 0.6;
             totalWeight += weight;
         }
     }
@@ -35,7 +36,7 @@ void main() {
     vec3 blurredRGB = colorSum / totalWeight;
     vec4 tex = texture(imageTexture, uv);
     //vec3 n_bg = bg + vec3(0.0, 0.0, 1.0) * blue_blend * 0.1 * length(uv - vec2(.5, 0.)) * 0.8;
-    gl_FragColor = vec4((blurredRGB + bg) * (1.0 - tex.a) + tex.rgb + vec3(0.0, 0.0, 1.0) * blue_blend * 0.1 * length(uv - vec2(.5, 0.)) * 0.8, 1.0);
+    gl_FragColor = vec4((blurredRGB + bg) * (1.0 - tex.a) + tex.rgb + vg_color *.5 * length(uv - vec2(.5, 0.)) * 0.8, 1.0);
     //gl_FragColor = vec4(blurredRGB + tex.rgb + bg, 1.0);
     //gl_FragColor = vec4(pow(uv.y, 4), 0., 0., 0.);
 }//texture2D(imageTexture, (uv + noise)).xyz

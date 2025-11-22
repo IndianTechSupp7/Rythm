@@ -30,6 +30,7 @@ class Game(ShaderWindow):
         return Scene.setup_scene()
 
     def update(self):
+        pygame.display.set_caption(str(self.clock.get_fps()))
         self.display.fill("#1f102a")
         self.center = np.array((self.w / 2, self.h / 2))
 

@@ -1,3 +1,4 @@
+from tkinter import NO
 import pygame
 from data.scripts.utilities import Font, lerp_color, rplc_color
 import random
@@ -14,6 +15,7 @@ class RandLetter(Font):
 
     def render(self, text, color="white", secoundary="#751756"):
         x_offset = 0
+        secoundary = secoundary or "#751756"
 
         full_width = sum(
             [

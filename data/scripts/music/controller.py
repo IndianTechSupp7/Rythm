@@ -1,3 +1,4 @@
+from platform import node
 import numpy as np
 import pygame
 
@@ -74,18 +75,8 @@ class Btn:
             self.pos - self.current_state.offset((1, 1))
         )
 
-    def update(self, offset):
-        # self.rect.center = int(self.pos[0]), int(self.pos[1])
-        # for node in self.nodes:
-        #     pygame.draw.rect(self.game.display, "red", node.rect)
-        #     if self.collide:
-        #         self.collide = False
-        #         # if self.rect.collidepoint(node.pos - offset):
-        #         if self.rect.colliderect(node.rect):
-        #             node.collide()
-        #             print(1)
-        pass
-        # self.current_state = self.sheet[0]
+    def update(self, offset, nodes):
+        self.nodes = nodes
 
     def render(self, surf, offset):
         self.current_state.render(surf, self.pos - offset, self.anchor_point)
@@ -123,7 +114,6 @@ class Controller:
         # self.finished = False
 
         self.img = self.assets.images["notes"][note + ".png"]
-
         self.nodes = Node.generate_nodes(
             beatmap=self.beatmap,
             hit_line_y=self.hit_line_y,
@@ -153,7 +143,10 @@ class Controller:
             node.rect.centerx = self.start_pos[0]
         # if self.nodes[-1].triggered:
         #     self.finished = True
-        self.btn.update((-self.start_pos[0], 0))
+        nodes = Node.get_collide_rects(self.nodes)
+        if self.note == "tom":
+            print(len(nodes))
+        self.btn.update((-self.start_pos[0], 0), nodes)
 
     def render(self, surf):
         # pygame.draw.line(

@@ -11,7 +11,7 @@ class Input:
     def add_callback(
         self, name, func, mode: Literal["press", "release", "hold"] = "press"
     ):
-        if name not in self.callbacks:
+        if name not in self.callbacks[mode]:
             self.callbacks[mode][name] = []
         self.callbacks[mode][name].append(func)
 

@@ -1,9 +1,9 @@
+from tkinter import NO
 import pygame
 from data.scripts.utilities import lerp_color, rplc_color
 from data.scripts.sprite import Sprite
 from .letter import RandLetter
 
-BG_ANIM_TIME = 1
 
 
 class UI:
@@ -23,6 +23,7 @@ class UI:
             for i, ch in enumerate(self.base_text)
         ]
         self.text_sprite = Sprite(self.rndl.render(self.text, "white"))
+        self.secondary = None
         # self.rnd_sprite = Sprite(self.rndl.render(self.text[self.index :], "#751756"))
 
     def menu(self):
@@ -35,11 +36,7 @@ class UI:
             self.text_sprite.surf = self.rndl.render(
                 self.text,
                 "white",
-                lerp_color(
-                    "#25246b",
-                    "#751756",
-                    min(self.music.current_time, BG_ANIM_TIME) / BG_ANIM_TIME,
-                ),
+                self.secondary,
             )
             # self.rnd_sprite.surf = self.rndl.render(self.text[self.index :], "#751756")
         self.index = int(len(self.base_text) * self.music.full_time)

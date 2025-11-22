@@ -5,21 +5,19 @@ from data.scripts.utilities import move_towards
 from data.scripts.sprite import Sprite
 
 HIT_THRASHOLD = 20
+RMV_DIST = 75
 
 
 class Node:
     triggered = []
 
-    def __init__(
-        self, spawn_time, beat_time, pos, hit_line_y, def_texture: pygame.Surface
-    ):
+    def __init__(self, spawn_time, hit_line, pos, def_texture: pygame.Surface):
         self.pos = np.array(list(pos), np.float32)
         self.spawn_time = spawn_time
-        self.hit_line_y = hit_line_y
-        self.beat_time = beat_time
+        self.hit_line = hit_line
 
         self.triggered = False
-        self.good = True
+        self.active = False
         self.rect = def_texture.get_rect()
 
         # self.r = 10
@@ -41,6 +39,7 @@ class Node:
 
     def update(self, dir, current_time):
         if current_time >= self.spawn_time:
+            
             self.pos += dir
             # if self.pos[1] > self.hit_line_y and not self.triggered:
             #     self.collide()
@@ -59,6 +58,9 @@ class Node:
                 self.scale = move_towards(
                     self.scale, self.scale_target, self.scale_speed, 1
                 )
+            self.active = True
+            if self.pos[1] > self.hit_line + RMV_DIST:
+                self.active = False
             self.rect.x = int(self.pos[0])
             self.rect.y = int(self.pos[1]) - self.sprite.get().height / 2
             self.sprite.scale_nrom(self.scale)
@@ -81,8 +83,9 @@ class Node:
             #     self.scale_speed = 0.01
 
     def render(self, surf, offset=(0, 0)):
-        self.sprite.render(surf, self.pos - offset)
-        self.overlay.render(surf, self.pos - offset)
+        if self.active:
+            self.sprite.render(surf, self.pos - offset)
+            self.overlay.render(surf, self.pos - offset)
         # pygame.draw.circle(surf, "red", self.pos - offset, 3)
         # pygame.draw.rect(surf, "red", self.rect)
         # surf.blit(self.surf, self.pos - offset)
@@ -91,6 +94,14 @@ class Node:
     @classmethod
     def get_result(cls):
         pass
+
+    @classmethod
+    def get_collide_rects(cls, nodes):
+        out = []
+        for node in nodes:
+            if node.active and node:
+                out.append(node)
+        return out
 
     @staticmethod
     def generate_nodes(
@@ -111,10 +122,9 @@ class Node:
             nodes.append(
                 Node(
                     spawn_time,
-                    beat["time"],
-                    def_texture=def_texture,
-                    pos=(0, start),
-                    hit_line_y=hit_line_y,
+                    hit_line_y,
+                    (0, start),
+                    def_texture,
                 )
             )
         return nodes

@@ -1,4 +1,6 @@
 from ast import Not
+from csv import Error
+import random
 import time
 from typing import Text
 import pygame
@@ -14,6 +16,8 @@ NOTE_SPACING = 40
 NOTE_SPEED = 200
 Y_OFFSET = -30
 BEAT_TOLERANCE = 0.8
+BG_ANIM_TIME = 2
+
 
 """
 Bent a neved: "tom": 0.6, "kick": 0.2, "cym": 0.5, "snr": 0.4
@@ -50,6 +54,7 @@ class Music(Scene):
         self.current_beatmap = self.assets.beatmaps[self.current_song_name + ".json"]
         self.start_time = time.time()
         self.current_time = 0
+        self.color_timer = 0
         # self.full_time = max(
         #     self.current_beatmap["tracks"]["Tom"][-1]["time"],
         #     self.current_beatmap["tracks"]["Cymbal"][-1]["time"],
@@ -134,6 +139,9 @@ class Music(Scene):
             self.assets.images["noise.png"], self.bg_shader.ctx
         )
         self.bg_texture = Texture(self.background, self.bg_shader.ctx)
+        self.secondary = "#25246b"
+        self._prev_color = (0, 0, 0, 0)
+        self._current_color = (0, 0, 0, 0)
 
         # self.bright = Shader(DEFAULT_VERTEX_SHADER, "bright.glsl", self.surf)
         # self.blur = Shader(DEFAULT_VERTEX_SHADER, "blur.glsl", self.surf)
@@ -147,6 +155,11 @@ class Music(Scene):
         pygame.mixer.music.play()
 
         self.input.add_callback("menu", self.pause, "press")
+        self.input.add_callback(
+            "kick",
+            lambda: self.change_theme(None, [random.randint(0, 255) for i in range(3)]),
+            "press",
+        )
         # self.game.input.add_callback("menu", self.active, "press")
 
     def reset(self):
@@ -161,15 +174,21 @@ class Music(Scene):
             pygame.mixer.music.unpause()
         Scene.change_scene("Desktop")
 
+    def change_theme(self, primary, secoundary):
+        self.color_timer = time.time() - self.start_time
+        self._prev_color = self._current_color
+        self.secondary = pygame.Color(secoundary)
+
     def update(self, dt, **kwargs):
         if not self.is_paused:
             # self.surf.fill("#1f102a")
             # self.surf.blit(self.background, (0, 0))
 
             self.surf.fill((0, 0, 0, 0))
-
-            self.full_time = len(Node.triggered) / (self.all_beats * BEAT_TOLERANCE)
-
+            if self.all_beats:
+                self.full_time = len(Node.triggered) / (self.all_beats * BEAT_TOLERANCE)
+            else:
+                assert Error("nem jo a zene")
             if not pygame.mixer.music.get_busy():
                 self.finished = True
                 # self.ui.
@@ -187,6 +206,18 @@ class Music(Scene):
             self.kick.render(self.surf)
             self.cym.render(self.surf)
             self.snare.render(self.surf)
+
+            self._current_color = lerp_color(
+                self.secondary,
+                # "#751756",
+                self._prev_color,
+                min(self.current_time - self.color_timer, BG_ANIM_TIME) / BG_ANIM_TIME,
+            )
+            self.bg_shader.send(
+                "vg_color", list(pygame.Color(self._current_color).normalize())[:3]
+            )
+            # self.bg_shader.send("vg_color", (1., 0., 0.))
+            self.ui.secondary = self._current_color
 
             self.ui.update()
             self.ui.render(self.surf)
