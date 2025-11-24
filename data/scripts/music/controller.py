@@ -138,14 +138,16 @@ class Controller:
         self.entering = abs(self.center[0] - self.start_pos[0]) * 0.01
 
     def update(self, dt, current_time):
-        for node in self.nodes:
-            node.update(self.dir * self.note_speed * dt, current_time, dt)
-            node.rect.centerx = self.start_pos[0]
+        for i, node in sorted(enumerate(self.nodes), reverse=True):
+            if node.update(self.dir * self.note_speed * dt, current_time, dt):
+                self.nodes.pop(i)
+            else:
+                node.rect.centerx = self.start_pos[0]
         # if self.nodes[-1].triggered:
         #     self.finished = True
         nodes = Node.get_collide_rects(self.nodes)
-
         self.btn.update((-self.start_pos[0], 0), nodes)
+
     def render(self, surf):
         # pygame.draw.line(
         #     surf, "white", (0, self.hit_line_y), (self.game.game.w, self.hit_line_y)

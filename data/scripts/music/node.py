@@ -68,6 +68,7 @@ class Node:
             self.active = True
             if self.pos[1] > self.hit_line + RMV_DIST:
                 self.active = False
+                return True
             # self.color = [max(i - 10, 70) for i in self.color]
 
     def collide(self):
@@ -84,8 +85,9 @@ class Node:
             #     self.scale_speed = 0.01
 
     def render(self, surf, offset=(0, 0)):
-        self.sprite.render(surf, self.pos - offset)
-        self.overlay.render(surf, self.pos - offset)
+        if self.active:
+            self.sprite.render(surf, self.pos - offset)
+            self.overlay.render(surf, self.pos - offset)
         # pygame.draw.circle(surf, "red", self.pos - offset, 3)
         # pygame.draw.rect(surf, "red", self.rect)
         # surf.blit(self.surf, self.pos - offset)

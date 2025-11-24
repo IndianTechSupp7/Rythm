@@ -197,9 +197,7 @@ class Music(Scene):
             self.kick.update(dt, self.current_time)
             self.cym.update(dt, self.current_time)
             self.snare.update(dt, self.current_time)
-
-            print(self.kick.nodes[0].scale)
-
+            print(len(self.kick.nodes))
 
             self.tom.render(self.surf)
             self.kick.render(self.surf)
