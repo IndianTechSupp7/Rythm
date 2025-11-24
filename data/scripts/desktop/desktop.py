@@ -44,7 +44,7 @@ class DesktopGrid:
                 "pos": (7, 2),
                 "img": Sprite(self.scene.assets.images["ext"]["mp3.png"]),
                 "title": "Só Fé",
-                "on_press": lambda: self.open_music("Rakpart"),
+                "on_press": lambda: self.open_music("Só Fé"),
             }
         )
         self.add_icon(
@@ -52,7 +52,7 @@ class DesktopGrid:
                 "pos": (10, 1),
                 "img": Sprite(self.scene.assets.images["ext"]["mp3.png"]),
                 "title": "greedy",
-                "on_press": lambda: self.open_music("Rakpart"),
+                "on_press": lambda: self.open_music("greedy"),
             }
         )
         self.add_icon(
@@ -60,15 +60,15 @@ class DesktopGrid:
                 "pos": (11, 9),
                 "img": Sprite(self.scene.assets.images["ext"]["mp3.png"]),
                 "title": "Belehalok",
-                "on_press": lambda: self.open_music("Rakpart"),
+                "on_press": lambda: self.open_music("Belehalok"),
             }
         )
         self.add_icon(
             **{
                 "pos": (3, 8),
                 "img": Sprite(self.scene.assets.images["ext"]["mp3.png"]),
-                "title": "Angeleyes",
-                "on_press": lambda: self.open_music("Rakpart"),
+                "title": "Angeleyes.mp3",
+                "on_press": lambda: self.open_music("Angeleyes"),
             }
         )
 

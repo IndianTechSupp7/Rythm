@@ -37,9 +37,9 @@ class Node:
         self.overlay.surf.set_colorkey((0, 0, 0))
         self.overlay.surf.set_alpha(0)
 
-    def update(self, dir, current_time):
+    def update(self, dir, current_time, dt):
         if current_time >= self.spawn_time:
-            
+
             self.pos += dir
             # if self.pos[1] > self.hit_line_y and not self.triggered:
             #     self.collide()
@@ -58,15 +58,16 @@ class Node:
                 self.scale = move_towards(
                     self.scale, self.scale_target, self.scale_speed, 1
                 )
-            self.active = True
-            if self.pos[1] > self.hit_line + RMV_DIST:
-                self.active = False
+
             self.rect.x = int(self.pos[0])
             self.rect.y = int(self.pos[1]) - self.sprite.get().height / 2
             self.sprite.scale_nrom(self.scale)
             self.overlay.scale_nrom(self.scale)
             self.overlay_alpha = max(self.overlay_alpha - 10, 0)
             self.overlay.surf.set_alpha(self.overlay_alpha)
+            self.active = True
+            if self.pos[1] > self.hit_line + RMV_DIST:
+                self.active = False
             # self.color = [max(i - 10, 70) for i in self.color]
 
     def collide(self):
@@ -83,9 +84,8 @@ class Node:
             #     self.scale_speed = 0.01
 
     def render(self, surf, offset=(0, 0)):
-        if self.active:
-            self.sprite.render(surf, self.pos - offset)
-            self.overlay.render(surf, self.pos - offset)
+        self.sprite.render(surf, self.pos - offset)
+        self.overlay.render(surf, self.pos - offset)
         # pygame.draw.circle(surf, "red", self.pos - offset, 3)
         # pygame.draw.rect(surf, "red", self.rect)
         # surf.blit(self.surf, self.pos - offset)

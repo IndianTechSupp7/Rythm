@@ -39,10 +39,10 @@ class Sprite:
         return pygame.Rect((*pos, *self._surf.get_size()))
 
     def scale_nrom(self, scale):
-        _surf = pygame.transform.scale(self._base_surf, self.base_size * scale)
-        # self.rect = self._surf.get_rect()
-        # self.w, self.h = self._surf.get_size()
-        return Sprite(_surf)
+        self._surf = pygame.transform.scale(self._base_surf, self.base_size * scale)
+        self.rect = self._surf.get_rect()
+        self.w, self.h = self._surf.get_size()
+        return self
 
     def copy(self):
         return Sprite(self._surf.copy())

@@ -139,7 +139,7 @@ class Controller:
 
     def update(self, dt, current_time):
         for node in self.nodes:
-            node.update(self.dir * self.note_speed * dt, current_time)
+            node.update(self.dir * self.note_speed * dt, current_time, dt)
             node.rect.centerx = self.start_pos[0]
         # if self.nodes[-1].triggered:
         #     self.finished = True
@@ -150,6 +150,7 @@ class Controller:
         # pygame.draw.line(
         #     surf, "white", (0, self.hit_line_y), (self.game.game.w, self.hit_line_y)
         # )
+
         # pygame.draw.line(
         #     surf, "blue", (100, self.hit_line_y - 20), (100, self.hit_line_y + 20)
         # )

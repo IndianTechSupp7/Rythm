@@ -22,8 +22,8 @@ class Game(ShaderWindow):
 
         Scene.init_scene_manager(self)
 
-        Scene.add_scene(Desktop)
         Scene.add_scene(Music)
+        Scene.add_scene(Desktop)
 
         #Scene.change_scene("Desktop")
 

@@ -167,7 +167,7 @@ class Music(Scene):
         self.start_time = time.time()
 
     def pause(self):
-        pygame.mixer.music.pause()
+        pygame.mixer.music.stop()
         Scene.change_scene("Desktop")
 
     def change_theme(self, primary, secoundary):
@@ -197,6 +197,9 @@ class Music(Scene):
             self.kick.update(dt, self.current_time)
             self.cym.update(dt, self.current_time)
             self.snare.update(dt, self.current_time)
+
+            print(self.kick.nodes[0].scale)
+
 
             self.tom.render(self.surf)
             self.kick.render(self.surf)
