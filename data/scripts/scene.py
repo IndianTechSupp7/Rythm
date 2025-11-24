@@ -33,7 +33,7 @@ class Scene(ABC):
     def change_scene(cls, scene_name):
         cls._current_scene = cls.scenes[scene_name]
         cls.game.switch_events(cls._current_scene[0].setup_scene())
-        #cls.game.switch_events(cls._current_scene[0].input.get_callbacks())
+        # cls.game.switch_events(cls._current_scene[0].input.get_callbacks())
         # TODO:reset scene?
 
     @classmethod
@@ -54,9 +54,8 @@ class Scene(ABC):
 
     @classmethod
     def setup_scene(cls):
-        current_scene = cls.current_scene()
-        current_scene.setup()
-        return current_scene.input.get_callbacks()
+        cls._current_scene[0].setup()
+        return cls._current_scene[0].input.get_callbacks()
 
     @abstractmethod
     def setup(self, **kwargs):

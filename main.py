@@ -1,3 +1,4 @@
+from tkinter import SE
 import pygame
 from window import Window
 import numpy as np
@@ -21,9 +22,10 @@ class Game(ShaderWindow):
 
         Scene.init_scene_manager(self)
 
-        Scene.add_scene(Music)
         Scene.add_scene(Desktop)
+        Scene.add_scene(Music)
 
+        #Scene.change_scene("Desktop")
 
         # Scene.setup_scene()
         # return self.input.get_callbacks()

@@ -5,21 +5,21 @@ from window import ShaderWindow
 
 
 class Sprite:
-    def __init__(self, surf: pygame.Surface | tuple = (0, 0)):
+    def __init__(self, surf: pygame.Surface | tuple = (0, 0), *, flags=0):
         if type(surf) == pygame.Surface:
             self._surf = surf
         else:
             w = surf[0] or ShaderWindow.w
             h = surf[1] or ShaderWindow.h
-            self._surf = pygame.Surface((w, h))
-            #self._surf.fill((0, 0, 0))
+            self._surf = pygame.Surface((w, h), flags)
+            # self._surf.fill((0, 0, 0))
 
         self._base_surf = surf
         self.rect = self._surf.get_rect()
         self.w, self.h = self._surf.get_size()
         self.base_size = np.array(self._surf.get_size())
 
-    def offset(self, anchor):
+    def offset(self, anchor=(0, 0)):
         return self.rect.center * np.array(anchor)
 
     def get(self) -> pygame.Surface:
@@ -39,10 +39,10 @@ class Sprite:
         return pygame.Rect((*pos, *self._surf.get_size()))
 
     def scale_nrom(self, scale):
-        self._surf = pygame.transform.scale(self._base_surf, self.base_size * scale)
-        self.rect = self._surf.get_rect()
-        self.w, self.h = self._surf.get_size()
-        return self
+        _surf = pygame.transform.scale(self._base_surf, self.base_size * scale)
+        # self.rect = self._surf.get_rect()
+        # self.w, self.h = self._surf.get_size()
+        return Sprite(_surf)
 
     def copy(self):
         return Sprite(self._surf.copy())

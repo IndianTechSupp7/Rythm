@@ -167,11 +167,7 @@ class Music(Scene):
         self.start_time = time.time()
 
     def pause(self):
-        self.is_paused = not self.is_paused
-        if self.is_paused:
-            pygame.mixer.music.pause()
-        else:
-            pygame.mixer.music.unpause()
+        pygame.mixer.music.pause()
         Scene.change_scene("Desktop")
 
     def change_theme(self, primary, secoundary):

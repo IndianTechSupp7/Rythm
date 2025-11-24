@@ -1,15 +1,1 @@
-{
-  "song": "Bent a neved",
-  "max": {
-    "tom": 1.0,
-    "kick": 1.0,
-    "cym": 1.0,
-    "snr": 1.0
-  },
-  "min": {
-    "tom": 0.0,
-    "kick": 0.0,
-    "cym": 0.0,
-    "snr": 0.0
-  }
-}
+{"song": "Blame", "max": {"tom": 1.0, "kick": 1.0, "cym": 1.0, "snr": 1.0}, "min": {"tom": 0.0, "kick": 0.0, "cym": 0.0, "snr": 0.0}}
