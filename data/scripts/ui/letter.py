@@ -5,13 +5,15 @@ import random
 
 
 class RandLetter(Font):
-    def __init__(self, game, font_size=1):
+    def __init__(self, game, font_size=1, spacing=1):
         self.game = game
         super().__init__(
-            font_img=self.game.assets.images["font.png"], font_size=font_size
+            font_img=self.game.assets.images["font.png"],
+            font_size=font_size,
+            spacing=spacing,
         )
         self.is_fixed = 0
-        self.spacing = 3
+        self.spacing = spacing
 
     def render(self, text, color="white", secoundary="#751756"):
         x_offset = 0

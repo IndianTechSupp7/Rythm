@@ -43,6 +43,6 @@ class RandLetter(Font):
                 x_offset += self.characters[char].get_width() + self.spacing
             else:
                 x_offset += self.space_width + self.spacing
-        surf = rplc_color(surf, "red", color)
+        surf = rplc_color(surf, "red", color).convert_alpha()
         # surf.set_colorkey("black")
         return surf

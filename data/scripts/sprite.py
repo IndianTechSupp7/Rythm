@@ -1,7 +1,9 @@
 from tkinter import NO
 import numpy as np
 import pygame
-from window import ShaderWindow
+from window import Window
+
+from data.scripts.utilities import clamp
 
 
 class Sprite:
@@ -9,8 +11,8 @@ class Sprite:
         if type(surf) == pygame.Surface:
             self._surf = surf
         else:
-            w = surf[0] or ShaderWindow.w
-            h = surf[1] or ShaderWindow.h
+            w = surf[0] or Window.w
+            h = surf[1] or Window.h
             self._surf = pygame.Surface((w, h), flags)
             # self._surf.fill((0, 0, 0))
 
@@ -32,6 +34,7 @@ class Sprite:
     @surf.setter
     def surf(self, new):
         self._surf = new
+        self._base_surf = new
         self.rect = self._surf.get_rect()
         self.w, self.h = self._surf.get_size()
 
@@ -44,12 +47,26 @@ class Sprite:
         self.w, self.h = self._surf.get_size()
         return self
 
+    def scale_norm_save(self, scale):
+        _surf = pygame.transform.scale(self._surf, self.base_size * scale)
+        return Sprite(_surf)
+
     def copy(self):
         return Sprite(self._surf.copy())
 
-    def render(self, surf: pygame.Surface, pos, anchors=(0, 0), flags=0):
+    def set_perPx_opacity(self, opacity=1):
+        c_surf = self._surf.copy()
+        c_surf.fill(
+            (255, 255, 255, clamp(opacity, 0, 1) * 255),
+            special_flags=pygame.BLEND_RGBA_MULT,
+        )
+        return Sprite(c_surf)
+
+    def render(self, surf: pygame.Surface, pos, anchors=(0, 0), flags=0, opacity=1):
+        surf_c = self._surf.copy()
+        surf_c.set_alpha(clamp(opacity, 0, 1) * 255)
         surf.blit(
-            self._surf,
+            surf_c,
             np.array(pos) - self.rect.center + (self.rect.center * np.array(anchors)),
             special_flags=flags,
         )

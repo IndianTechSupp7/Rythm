@@ -64,7 +64,7 @@ class Node:
             self.sprite.scale_nrom(self.scale)
             self.overlay.scale_nrom(self.scale)
             self.overlay_alpha = max(self.overlay_alpha - 10, 0)
-            self.overlay.surf.set_alpha(self.overlay_alpha)
+            # self.overlay.surf.set_alpha(self.overlay_alpha)
             self.active = True
             if self.pos[1] > self.hit_line + RMV_DIST:
                 self.active = False
@@ -87,7 +87,7 @@ class Node:
     def render(self, surf, offset=(0, 0)):
         if self.active:
             self.sprite.render(surf, self.pos - offset)
-            self.overlay.render(surf, self.pos - offset)
+            self.overlay.render(surf, self.pos - offset, opacity=self.overlay_alpha)
         # pygame.draw.circle(surf, "red", self.pos - offset, 3)
         # pygame.draw.rect(surf, "red", self.rect)
         # surf.blit(self.surf, self.pos - offset)

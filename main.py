@@ -1,11 +1,8 @@
-from tkinter import SE
 import pygame
-from window import Window
 import numpy as np
 from data.scripts.asset_magare import AssetManager
 from data.scripts.desktop import Desktop
 from data.scripts.music import Music
-from data.scripts.input import Input
 
 from data.scripts.scene import Scene
 from window.shader import ShaderWindow
@@ -15,6 +12,7 @@ class Game(ShaderWindow):
     def setup(self):
 
         pygame.mixer.init()
+        self.current_song_name = ""
 
         self.assets = AssetManager()
         # self.input = Input(self)
@@ -25,7 +23,7 @@ class Game(ShaderWindow):
         Scene.add_scene(Desktop)
         Scene.add_scene(Music)
 
-        #Scene.change_scene("Desktop")
+        # Scene.change_scene("Desktop")
 
         # Scene.setup_scene()
         # return self.input.get_callbacks()
@@ -38,8 +36,14 @@ class Game(ShaderWindow):
 
         # surfs = Scene.update_scenes(self)
         surf = Scene.update_scene()
-        self.display.blit(surf, (0, 0))
+        self.display.blit(pygame.transform.scale(surf, self.display.get_size()), (0, 0))
+        #self.display.blit(surf, (0, 0))
 
 
 if __name__ == "__main__":
-    Game(display_scale=0.5).run()
+    try:
+        Game(display_scale=1.0, resizeable=False).run()
+    except KeyboardInterrupt:
+        pass
+    except pygame.error:
+        pass

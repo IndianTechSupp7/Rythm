@@ -15,12 +15,18 @@ STAR_AMOUNT = 50
 
 
 class Desktop(Scene):
+    def __init__(self):
+        super().__init__(display_scale=0.5)
+        self.desktop = DesktopGrid(self)
+
     def setup(self, **kwargs):
+        self.desktop.update_song_progress()
         self.background = Shader(
             DEFAULT_VERTEX_SHADER, self.assets.shaders["desktop_bg.glsl"], self.surf
         )
 
-        self.stars_surf = Sprite()
+
+        self.stars_surf = Sprite(self.size)
         self.moon = Sprite(self.assets.images["moon.png"])
         self.stars = [
             (
@@ -35,7 +41,7 @@ class Desktop(Scene):
         self.stars_tex = Texture(self.stars_surf.surf, self.background.ctx)
         # self.noise = Texture(self.assets.images["noise.png"], self.background.ctx)
 
-        self.desktop = DesktopGrid(self)
+        # self.desktop =
         self.table = Table(self)
         self.time = 0
 
@@ -45,7 +51,6 @@ class Desktop(Scene):
         self.background.send("color2", pygame.Color("#611851").normalize()[:3])
         self.background.send("color1", pygame.Color("#751756").normalize()[:3])
 
-        self.input.add_callback("menu", lambda: self.change_scene("Music"))
 
     def update(self, **kwargs):
         self.surf.fill((0, 0, 0, 0))
@@ -60,7 +65,7 @@ class Desktop(Scene):
         # TODO: meh ####
         # self.moon.render(self.surf, (300, 50))
 
-        self.desktop.update()
+        self.desktop.update(self.game.dt)
         self.desktop.render(self.surf)
         self.table.render(self.surf)
 

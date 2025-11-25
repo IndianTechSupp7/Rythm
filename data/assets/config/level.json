@@ -1,1 +1,1 @@
-{"song": "Angeleyes", "max": {"tom": 1.0, "kick": 1.0, "cym": 1.0, "snr": 1.0}, "min": {"tom": 0.0, "kick": 0.0, "cym": 0.0, "snr": 0.0}}
+{"max": {"tom": 1.0, "kick": 1.0, "cym": 1.0, "snr": 1.0}, "min": {"tom": 0.0, "kick": 0.0, "cym": 0.0, "snr": 0.0}, "songs": {"Angelise": [3, 1, 1.0], "Belehalok": [9, 4, 1.225296442687747], "S\u00f3 F\u00e9": [5, 3, 0.0029377203290246764], "Rakpart": [4, 5, 0.0], "Blame": [3, 3, 0.0], "Porszem": [7, 2, 0.005506607929515418], "greedy": [10, 1, 0.0], "Claw Marks": [7, 5, 0.0]}}

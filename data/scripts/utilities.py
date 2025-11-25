@@ -44,6 +44,10 @@ def rplc_color(surf: pygame.Surface, prev_c, new_c):
     return surf
 
 
+def clamp(x, mi, mx):
+    return max(min(x, mx), mi)
+
+
 def lerp_color(a, b, t):
     a = pygame.Color(a)
     return pygame.Color(b).lerp(a, t)
@@ -74,8 +78,8 @@ def clip(surf, x, y, w, h):
 
 
 class Font:
-    def __init__(self, font_img, font_size=1):
-        self.spacing = 1
+    def __init__(self, font_img, font_size=1, spacing=1):
+        self.spacing = spacing
         self.character_order = [
             "A",
             "B",

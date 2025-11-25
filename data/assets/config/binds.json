@@ -3,5 +3,6 @@
   "tom" : ["q", "d"],
   "cym" : [ "e", "k"],
   "snr" : ["r", "j"],
-  "menu" : ["ESCAPE"]
+  "menu" : ["ESCAPE"],
+  "continue" : ["RETURN"]
 }

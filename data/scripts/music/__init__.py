@@ -5,10 +5,11 @@ import time
 from typing import Text
 import pygame
 from pygame_shaders import Shader, DEFAULT_VERTEX_SHADER, Texture
+from scipy import sparse
 from data.scripts.asset_magare import AssetManager
 from data.scripts.music.ui import UI
 from data.scripts.scene import Scene
-from data.scripts.utilities import lerp_color
+from data.scripts.utilities import bezier, clamp, lerp, lerp_color
 from .node import Node
 from .controller import Controller
 
@@ -17,6 +18,7 @@ NOTE_SPEED = 200
 Y_OFFSET = -30
 BEAT_TOLERANCE = 0.8
 BG_ANIM_TIME = 2
+AUTO_SAVE = 5
 
 
 """
@@ -43,13 +45,16 @@ Rakpart
 
 
 class Music(Scene):
+    def __init__(self):
+        super().__init__(display_scale=0.5)
+
     def setup(self):
         self.is_paused = False
 
         # self.assets: AssetManager = self.game.assets
-        self.center = self.game.center
+        # self.center = self.center
 
-        self.current_song_name = self.assets.configs["level"]["song"]
+        self.current_song_name = self.game.current_song_name
 
         self.current_beatmap = self.assets.beatmaps[self.current_song_name + ".json"]
         self.start_time = time.time()
@@ -128,6 +133,7 @@ class Music(Scene):
                 len(self.cym.nodes),
             ),
         )
+        self.on_finish = []
 
         self.ui = UI(self)
         self.background = pygame.Surface(self.surf.get_size())
@@ -162,6 +168,8 @@ class Music(Scene):
         )
         # self.game.input.add_callback("menu", self.active, "press")
 
+        self.input.add_callback("continue", lambda: pygame.mixer.music.stop())
+
     def reset(self):
         pygame.mixer.music.play()
         self.start_time = time.time()
@@ -177,6 +185,10 @@ class Music(Scene):
 
     def update(self, dt, **kwargs):
         if not self.is_paused:
+            if round(time.time(), 2) % AUTO_SAVE == 0:
+                data = self.assets.configs["level"]
+                data["songs"][self.current_song_name][2] = self.full_time
+                self.assets.save_config("level", data)
             # self.surf.fill("#1f102a")
             # self.surf.blit(self.background, (0, 0))
 
@@ -186,18 +198,19 @@ class Music(Scene):
             else:
                 assert Error("nem jo a zene")
             if not pygame.mixer.music.get_busy():
-                self.finished = True
-                # self.ui.
+                if not self.finished:
+                    for func in self.on_finish:
+                        func()
+                    self.finished = True
 
             self.current_time = time.time() - self.start_time
 
-            self.center = self.game.center
+            # self.center = self.game.center
 
             self.tom.update(dt, self.current_time)
             self.kick.update(dt, self.current_time)
             self.cym.update(dt, self.current_time)
             self.snare.update(dt, self.current_time)
-            print(len(self.kick.nodes))
 
             self.tom.render(self.surf)
             self.kick.render(self.surf)
@@ -224,7 +237,6 @@ class Music(Scene):
             self.bg_shader.send("noiseTexture", 1)
             self.bg_shader.send("bgTexture", 2)
             self.bg_shader.send("time", self.current_time)
-
         return self.bg_shader.render()
 
     def setup_bg(self):

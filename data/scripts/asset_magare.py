@@ -1,6 +1,6 @@
 import os
 import pygame
-from data.scripts.utilities import get_json
+from data.scripts.utilities import get_json, write_json
 
 
 def add_item(d, path, item):
@@ -39,6 +39,9 @@ class AssetManager:
         self.shaders = {
             i.split("\\")[-1]: i for i in self.search((".glsl"), "/shaders")
         }
+
+    def save_config(self, name, data):
+        write_json(self.BASE_ASSETS_FOLDER + f"/config/{name}.json", data)
 
     def search(self, exts: list | tuple, base=""):
         path = self.BASE_ASSETS_FOLDER + base
