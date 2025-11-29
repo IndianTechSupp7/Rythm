@@ -1,3 +1,5 @@
+import numpy as np
+import pygame
 from window import Window
 from data.scripts.desktop.icon import Icon
 from data.scripts.scene import Scene
@@ -13,7 +15,14 @@ TILE_GAP = 3
 class DesktopGrid:
     def __init__(self, scene: Scene):
         self.scene = scene
+        self.mouse = self.scene.mouse
+        self.assets = self.scene.assets
+
         Icon.scene = self.scene
+
+        # self.surf = Sprite(
+        #     tuple(np.array(self.scene.size) * 0.5), flags=pygame.SRCALPHA
+        # )
 
         for song, data in self.scene.assets.configs["level"]["songs"].items():
             Icon.add_icon(
@@ -45,12 +54,16 @@ class DesktopGrid:
     def update(self, dt):
         # for icon in self.icons:
         #     icon.update(TILE_WIDTH, TILE_HEIGTH)
+        # self.mouse = self.scene.mouse
+        # self.mouse["pos"] = np.array(self.mouse["pos"]) * 0.5
         Icon.update_icons(TILE_WIDTH, TILE_HEIGTH, dt)
 
     def render(self, surf):
         # for icon in self.icons:
         #     icon.render(surf)
+        # self.surf.clear((0, 0, 0, 0))
         Icon.render_icons(surf)
+        # pygame.transform.scale(self.surf.surf, surf.get_size(), surf)
 
 
 class Table:
@@ -59,4 +72,4 @@ class Table:
         self.sprite = Sprite((0, 20))
 
     def render(self, surf):
-        self.sprite.render(surf, (0, Window.h), (1, -1))
+        self.sprite.render(surf, (0, self.scene.h), (1, -1))

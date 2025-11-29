@@ -2,6 +2,18 @@
     "song": "Szerelemre sz\u00fclettem.mp3",
     "bpm": 123.046875,
     "sample_rate": 22050,
+    "max": {
+        "tom": 0.6,
+        "kick": 1.0,
+        "cym": 1.0,
+        "snr": 1.0
+    },
+    "min": {
+        "tom": 0.4,
+        "kick": 0.0,
+        "cym": 0.6,
+        "snr": 0.3
+    },
     "tracks": {
         "Kick": [
             {

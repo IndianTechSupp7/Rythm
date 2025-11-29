@@ -3,6 +3,7 @@ from csv import Error
 import random
 import time
 from typing import Text
+from networkx import is_path
 import pygame
 from pygame_shaders import Shader, DEFAULT_VERTEX_SHADER, Texture
 from scipy import sparse
@@ -47,9 +48,17 @@ Rakpart
 class Music(Scene):
     def __init__(self):
         super().__init__(display_scale=0.5)
+        self.input.add_callback("menu", self.pause, "press")
+        self.input.add_callback(
+            "kick",
+            lambda: self.change_theme(None, [random.randint(0, 255) for i in range(3)]),
+            "press",
+        )
 
     def setup(self):
         self.is_paused = False
+        self.assets.reset_beatmaps()
+        self.game.set_cursor(False)
 
         # self.assets: AssetManager = self.game.assets
         # self.center = self.center
@@ -57,9 +66,9 @@ class Music(Scene):
         self.current_song_name = self.game.current_song_name
 
         self.current_beatmap = self.assets.beatmaps[self.current_song_name + ".json"]
-        self.start_time = time.time()
         self.current_time = 0
         self.color_timer = 0
+        self.start_time = time.time()
         # self.full_time = max(
         #     self.current_beatmap["tracks"]["Tom"][-1]["time"],
         #     self.current_beatmap["tracks"]["Cymbal"][-1]["time"],
@@ -134,6 +143,9 @@ class Music(Scene):
             ),
         )
         self.on_finish = []
+        self.on_pause = []
+        self.on_unpause = []
+        self.in_tutorial = True
 
         self.ui = UI(self)
         self.background = pygame.Surface(self.surf.get_size())
@@ -158,64 +170,84 @@ class Music(Scene):
         # self.final_tex = Texture(pygame.Surface(self.size), self.combine.ctx)
 
         pygame.mixer.music.load(self.assets.sfx[self.current_beatmap["song"]])
-        pygame.mixer.music.play()
 
-        self.input.add_callback("menu", self.pause, "press")
-        self.input.add_callback(
-            "kick",
-            lambda: self.change_theme(None, [random.randint(0, 255) for i in range(3)]),
-            "press",
-        )
         # self.game.input.add_callback("menu", self.active, "press")
 
-        self.input.add_callback("continue", lambda: pygame.mixer.music.stop())
+        # self.input.add_callback("continue", lambda: pygame.mixer.music.stop())
+        self.pause_time = 0
 
     def reset(self):
         pygame.mixer.music.play()
         self.start_time = time.time()
 
     def pause(self):
-        pygame.mixer.music.stop()
-        Scene.change_scene("Desktop")
+        self.is_paused = not self.is_paused
+        if self.is_paused:
+            self.pause_time = time.time()
+            pygame.mixer.music.pause()
+            for func in self.on_pause:
+                func()
+        else:
+            self.start_time += time.time() - self.pause_time
+            pygame.mixer.music.unpause()
+            for func in self.on_unpause:
+                func()
+
+        # Scene.change_scene("Desktop")
 
     def change_theme(self, primary, secoundary):
         self.color_timer = time.time() - self.start_time
         self._prev_color = self._current_color
         self.secondary = pygame.Color(secoundary)
 
+    def on_tutorial_complete(self):
+        pygame.mixer.music.play()
+        self.start_time = time.time()
+        self.color_timer = time.time() - self.start_time
+        self.current_time = time.time() - self.start_time
+
+        # self.current_time = time.time() - self.start_time
+
     def update(self, dt, **kwargs):
+        self.surf.fill((0, 0, 0, 0))
         if not self.is_paused:
-            if round(time.time(), 2) % AUTO_SAVE == 0:
-                data = self.assets.configs["level"]
-                data["songs"][self.current_song_name][2] = self.full_time
-                self.assets.save_config("level", data)
-            # self.surf.fill("#1f102a")
-            # self.surf.blit(self.background, (0, 0))
+            if not self.in_tutorial:
+                if round(time.time(), 2) % AUTO_SAVE == 0:
+                    data = self.assets.configs["level"]
+                    data["songs"][self.current_song_name][2] = self.full_time
+                    self.assets.save_config("level", data)
+                # self.surf.fill("#1f102a")
+                # self.surf.blit(self.background, (0, 0))
 
-            self.surf.fill((0, 0, 0, 0))
-            if self.all_beats:
-                self.full_time = len(Node.triggered) / (self.all_beats * BEAT_TOLERANCE)
-            else:
-                assert Error("nem jo a zene")
-            if not pygame.mixer.music.get_busy():
-                if not self.finished:
-                    for func in self.on_finish:
-                        func()
-                    self.finished = True
-
-            self.current_time = time.time() - self.start_time
+                if self.all_beats:
+                    self.full_time = len(Node.triggered) / (
+                        self.all_beats * BEAT_TOLERANCE
+                    )
+                else:
+                    assert Error("nem jo a zene")
+                if not pygame.mixer.music.get_busy():
+                    if not self.finished:
+                        for func in self.on_finish:
+                            func()
+                        self.finished = True
+                        self.is_paused = True
 
             # self.center = self.game.center
+            if (
+                not any(
+                    [i.in_tutorial for i in (self.tom, self.kick, self.cym, self.snare)]
+                )
+                and self.in_tutorial
+            ):
+                self.on_tutorial_complete()
+                self.in_tutorial = False
+
+            self.current_time = time.time() - self.start_time
 
             self.tom.update(dt, self.current_time)
             self.kick.update(dt, self.current_time)
             self.cym.update(dt, self.current_time)
             self.snare.update(dt, self.current_time)
-
-            self.tom.render(self.surf)
-            self.kick.render(self.surf)
-            self.cym.render(self.surf)
-            self.snare.render(self.surf)
 
             self._current_color = lerp_color(
                 self.secondary,
@@ -223,36 +255,45 @@ class Music(Scene):
                 self._prev_color,
                 min(self.current_time - self.color_timer, BG_ANIM_TIME) / BG_ANIM_TIME,
             )
-            self.bg_shader.send(
-                "vg_color", list(pygame.Color(self._current_color).normalize())[:3]
-            )
+            # print(self._current_color.normalize())
+
+            self.bg_shader.send("vg_color", list(self._current_color.normalize())[:3])
             # self.bg_shader.send("vg_color", (1., 0., 0.))
             self.ui.secondary = self._current_color
-
-            self.ui.update()
-            self.ui.render(self.surf)
 
             self.noise_texture.use(1)
             self.bg_texture.use(2)
             self.bg_shader.send("noiseTexture", 1)
             self.bg_shader.send("bgTexture", 2)
             self.bg_shader.send("time", self.current_time)
+        else:
+            if self.input.get_event("continue", "press"):
+                # if self.finished:
+                #     Scene.change_scene("Desktop")
+                # else:
+                #     self.pause()
+                Scene.change_scene("Desktop")
+            # if self.input.get_event("menu", "press"):
+            #     print(1)
+            #     Scene.change_scene("Desktop")
+        self.tom.render(self.surf)
+        self.kick.render(self.surf)
+        self.cym.render(self.surf)
+        self.snare.render(self.surf)
+
+        self.ui.update()
+        self.ui.render(self.surf)
         return self.bg_shader.render()
 
     def setup_bg(self):
         ROW = 10
         ROW_WIDTH = self.background.width / ROW
         LINE_WIDTH = 1
-        BG_ANIM_TIME = 1
-        # print(min(self.current_time, 10) / 10)
-        # self.background.fill(
-        #     lerp_color("#11112a", "#1f102a", min(self.current_time, BG_ANIM_TIME) / BG_ANIM_TIME)
-        # )
+
         self.background.fill("#1f102a")
         for i in range(ROW):
             pygame.draw.line(
                 self.background,
-                # lerp_color("#1e1443", "#390947", min(self.current_time, BG_ANIM_TIME) / BG_ANIM_TIME),
                 "#390947",
                 (i * ROW_WIDTH, 0),
                 (i * ROW_WIDTH, self.background.height),

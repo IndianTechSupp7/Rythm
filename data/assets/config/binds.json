@@ -1,8 +1,9 @@
 {
-  "kick" : ["w","f"],
-  "tom" : ["q", "d"],
-  "cym" : [ "e", "k"],
-  "snr" : ["r", "j"],
+  "kick" : ["f"],
+  "tom" : ["d"],
+  "cym" : ["k"],
+  "snr" : ["j"],
   "menu" : ["ESCAPE"],
-  "continue" : ["RETURN"]
+  "continue" : ["RETURN"],
+  "enter" : ["RETURN", "SPACE"]
 }

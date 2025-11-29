@@ -13,7 +13,7 @@ class RandLetter(Font):
         self.is_fixed = 0
         self.spacing = 3
 
-    def render(self, text, color="white", secoundary="#751756"):
+    def render(self, text, color="white", secoundary="#751756", alpha=255):
         x_offset = 0
         secoundary = secoundary or "#751756"
 
@@ -43,6 +43,7 @@ class RandLetter(Font):
                 x_offset += self.characters[char].get_width() + self.spacing
             else:
                 x_offset += self.space_width + self.spacing
-        surf = rplc_color(surf, "red", color).convert_alpha()
+        surf = rplc_color(surf, "red", color)
         # surf.set_colorkey("black")
+        surf.fill((255, 255, 255, alpha), special_flags=pygame.BLEND_RGBA_MULT)
         return surf

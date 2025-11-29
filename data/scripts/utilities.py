@@ -44,7 +44,7 @@ def rplc_color(surf: pygame.Surface, prev_c, new_c):
     return surf
 
 
-def clamp(x, mi, mx):
+def clamp(x, mi=0, mx=1):
     return max(min(x, mx), mi)
 
 

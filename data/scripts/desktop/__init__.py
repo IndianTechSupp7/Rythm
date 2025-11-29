@@ -20,6 +20,7 @@ class Desktop(Scene):
         self.desktop = DesktopGrid(self)
 
     def setup(self, **kwargs):
+        self.game.set_cursor(True)
         self.desktop.update_song_progress()
         self.background = Shader(
             DEFAULT_VERTEX_SHADER, self.assets.shaders["desktop_bg.glsl"], self.surf
@@ -27,7 +28,6 @@ class Desktop(Scene):
 
 
         self.stars_surf = Sprite(self.size)
-        self.moon = Sprite(self.assets.images["moon.png"])
         self.stars = [
             (
                 randint(0, self.stars_surf.w),

@@ -14,8 +14,9 @@ from data.scripts.sprite import Sprite
 from data.scripts.ui.letter import RandLetter
 
 PADDING = np.array((3, 3))
-TILE_WIDTH = 32 - PADDING[0] * 2
-TILE_HEIGTH = 42 - PADDING[1] * 2
+TILE_WIDTH = 32
+TILE_HEIGTH = 42
+TILE_PADDING = (TILE_WIDTH - PADDING[0] * 2, TILE_HEIGTH - PADDING[1] * 2)
 
 
 class Icon:
@@ -37,10 +38,10 @@ class Icon:
 
         p = int(self.progress * len(self.title))
         render_title = self.title[:p] + self.locked_txt[p:]
-        self.img: Sprite = self.settings.get("img", Sprite((TILE_WIDTH, TILE_HEIGTH)))
+        self.img: Sprite = self.settings.get("img", Sprite(TILE_PADDING))
 
         self.pos = np.array((0, 0))
-        self.font = RandLetter(self.scene, 1, 1)
+        self.font = RandLetter(self.scene, 1)
         self.text_sprite = Sprite(self.font.render(render_title, "white", "gray"))
         self.rect = self.img.get_rect().inflate(10, 10)
 
@@ -56,7 +57,7 @@ class Icon:
         render_title = self.title[:p] + self.locked_txt[p:]
         self.text_sprite = Sprite(self.font.render(render_title, "white", "gray"))
 
-        self.double_clikc = max(0, self.double_clikc - 5 * dt)
+        self.double_clikc = max(0, self.double_clikc - 2  * dt)
         self.pos = np.array((w, h)) * self.tile_pos
         self.rect.center = self.pos + np.array((16, 16))
         if self.rect.collidepoint(self.scene.mouse["pos"]) or self.dragging:

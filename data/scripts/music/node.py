@@ -1,6 +1,7 @@
 import numpy as np
 import pygame
 
+from data.scripts.ui.letter import RandLetter
 from data.scripts.utilities import move_towards
 from data.scripts.sprite import Sprite
 
@@ -11,7 +12,10 @@ RMV_DIST = 75
 class Node:
     triggered = []
 
-    def __init__(self, spawn_time, hit_line, pos, def_texture: pygame.Surface):
+    def __init__(
+        self, game, spawn_time, hit_line, pos, def_texture: pygame.Surface, strength
+    ):
+        self.game = game
         self.pos = np.array(list(pos), np.float32)
         self.spawn_time = spawn_time
         self.hit_line = hit_line
@@ -30,12 +34,18 @@ class Node:
         self.scale_target = 1
         self.overlay_alpha = 0
 
-        mask = pygame.mask.from_surface(self.surf)
-        self.overlay = Sprite(
-            surf=mask.to_surface(setcolor=(255, 255, 255), unsetcolor=(0, 0, 0))
+        mask = pygame.mask.from_surface(self.surf).to_surface(
+            setcolor=(255, 255, 255), unsetcolor=(0, 0, 0)
         )
-        self.overlay.surf.set_colorkey((0, 0, 0))
+        mask.set_colorkey((0, 0, 0))
+        self.overlay = Sprite(
+            surf=mask,
+            flags=pygame.SRCALPHA,
+        )
         self.overlay.surf.set_alpha(0)
+
+        self.font = RandLetter(self.game)
+        self.strength = Sprite(self.font.render(strength, color=(0, 0, 0), alpha=60))
 
     def update(self, dir, current_time, dt):
         if current_time >= self.spawn_time:
@@ -87,6 +97,7 @@ class Node:
     def render(self, surf, offset=(0, 0)):
         if self.active:
             self.sprite.render(surf, self.pos - offset)
+            self.strength.render(surf, self.pos - offset)
             self.overlay.render(surf, self.pos - offset, opacity=self.overlay_alpha)
         # pygame.draw.circle(surf, "red", self.pos - offset, 3)
         # pygame.draw.rect(surf, "red", self.rect)
@@ -107,6 +118,7 @@ class Node:
 
     @staticmethod
     def generate_nodes(
+        game,
         beatmap,
         hit_line_y,
         start,
@@ -120,13 +132,15 @@ class Node:
             i for i in beatmap if strength_max >= float(i["strength"]) >= strength_min
         ]:
             travel_time = (hit_line_y - start) / note_speed
-            spawn_time = beat["time"] - travel_time
+            spawn_time = round(beat["time"], 1) - travel_time
             nodes.append(
                 Node(
+                    game,
                     spawn_time,
                     hit_line_y,
                     (0, start),
                     def_texture,
+                    str(round(beat["strength"] * 1000)),
                 )
             )
         return nodes

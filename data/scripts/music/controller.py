@@ -3,7 +3,8 @@ import numpy as np
 import pygame
 
 from data.scripts.sprite import Sprite
-from data.scripts.utilities import bezier
+from data.scripts.ui.letter import RandLetter
+from data.scripts.utilities import Font, bezier
 from .node import Node
 
 from data.scripts.asset_magare import AssetManager
@@ -59,8 +60,10 @@ class Btn:
         )
 
         self.collide = False
+        self.press = False
 
     def active(self):
+        self.press = True
         self.current_state = self.on
         self.rect: pygame.Rect = self.current_state.get_rect(
             self.pos - self.current_state.offset((1, 1))
@@ -70,6 +73,7 @@ class Btn:
                 node.collide()
 
     def reset(self):
+        self.press = False
         self.current_state = self.off
         self.rect: pygame.Rect = self.current_state.get_rect(
             self.pos - self.current_state.offset((1, 1))
@@ -115,6 +119,7 @@ class Controller:
 
         self.img = self.assets.images["notes"][note + ".png"]
         self.nodes = Node.generate_nodes(
+            game=self.game,
             beatmap=self.beatmap,
             hit_line_y=self.hit_line_y,
             start=self.start_pos[1],
@@ -136,17 +141,37 @@ class Controller:
             anchor_point=(0, 0.5),
         )
         self.entering = abs(self.center[0] - self.start_pos[0]) * 0.01
+        self.in_tutorial = True
+        self.font = RandLetter(self.game, font_size=3)
+        self.alpha = 100
+        self.tut = Sprite(
+            self.font.render(
+                self.assets.configs["binds"].get(self.note)[0],
+                "white",
+                alpha=self.alpha,
+            )
+        )
 
     def update(self, dt, current_time):
-        for i, node in sorted(enumerate(self.nodes), reverse=True):
-            if node.update(self.dir * self.note_speed * dt, current_time, dt):
-                self.nodes.pop(i)
-            else:
-                node.rect.centerx = self.start_pos[0]
-        # if self.nodes[-1].triggered:
-        #     self.finished = True
-        nodes = Node.get_collide_rects(self.nodes)
-        self.btn.update((-self.start_pos[0], 0), nodes)
+        if not self.game.in_tutorial:
+            for i, node in sorted(enumerate(self.nodes), reverse=True):
+                if node.update(self.dir * self.note_speed * dt, current_time, dt):
+                    self.nodes.pop(i)
+                else:
+                    node.rect.centerx = self.start_pos[0]
+            # if self.nodes[-1].triggered:
+            #     self.finished = True
+            nodes = Node.get_collide_rects(self.nodes)
+            self.btn.update((-self.start_pos[0], 0), nodes)
+        else:
+            if self.btn.press:
+                self.alpha = 250
+                self.tut.surf = self.font.render(
+                    self.assets.configs["binds"].get(self.note)[0],
+                    "white",
+                    alpha=self.alpha,
+                )
+                self.in_tutorial = False
 
     def render(self, surf):
         # pygame.draw.line(
@@ -156,6 +181,9 @@ class Controller:
         # pygame.draw.line(
         #     surf, "blue", (100, self.hit_line_y - 20), (100, self.hit_line_y + 20)
         # )
+        if self.game.in_tutorial:
+            self.tut.render(surf, (self.start_pos[0], self.game.center[1]))
+
         self.entering = max(0, min(1, self.entering + 0.03))
         e = 1 - bezier(0.187, 0.627, 0.762, 1.256, self.entering)[1]
         for node in self.nodes[::-1]:

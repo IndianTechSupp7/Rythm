@@ -16,7 +16,7 @@ class Sprite:
             self._surf = pygame.Surface((w, h), flags)
             # self._surf.fill((0, 0, 0))
 
-        self._base_surf = surf
+        self._base_surf = self._surf.copy()
         self.rect = self._surf.get_rect()
         self.w, self.h = self._surf.get_size()
         self.base_size = np.array(self._surf.get_size())
@@ -40,6 +40,9 @@ class Sprite:
 
     def get_rect(self, pos=(0, 0)):
         return pygame.Rect((*pos, *self._surf.get_size()))
+
+    def clear(self, color=(0, 0, 0, 0)):
+        self._surf.fill(color)
 
     def scale_nrom(self, scale):
         self._surf = pygame.transform.scale(self._base_surf, self.base_size * scale)

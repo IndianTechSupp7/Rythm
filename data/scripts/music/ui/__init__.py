@@ -35,38 +35,54 @@ class UI:
                 "opacity": 1,
             },
             "next": {
-                "text": "Press Enter to continue",
+                "text": "Nyomja meg az Enter-t a folytatáshoz",
                 "scale": 0.5,
                 "color": "white",
                 "pos": np.array((self.center[0], self.center[0])),
                 "opacity": 0,
-                "anchor": (0, -1),
+                "anchor": (0, 1),
             },
         }
-
+        self.t = 0
+        self.ui_title_pos = self.text_buffer["title"]["pos"]
         # self.title_pos = np.array((self.center[0], 15))
         # self.target_title_pos = np.array((self.center[0], 15))
         # self.scale = 1
 
-        self.music.on_finish.append(self.on_finish)
+        # self.music.on_finish.append(self.on_pause)
 
-    def on_finish(self):
-        self.ui_title_pos = self.text_buffer["title"]["pos"]
+        self.music.on_finish.append(self.on_pause)
+        self.music.on_pause.append(self.on_pause)
+        self.music.on_unpause.append(self.on_pause)
+
+    def on_pause(self):
         self.t = time.time()
 
-    def menu(self):
-        pass
-
-    def when_finish(self):
-        t = bezier(0.833, 0.889, 0.089, 0.993, clamp(time.time() - self.t, 0, 1))[1]
+    def menu(self, t):
         self.text_buffer["title"]["pos"] = lerp(self.ui_title_pos, self.center, t)
-        self.text_buffer["title"]["scale"] = lerp(1, 3, t)
+        self.text_buffer["title"]["scale"] = lerp(1, 1.4, t)
         self.text_buffer["next"]["opacity"] = lerp(0, 1, t)
+
+    # def when_finish(self):
+    #     t = bezier(0.833, 0.889, 0.089, 0.993, clamp(time.time() - self.t, 0, 1))[1]
+    #     self.text_buffer["title"]["pos"] = lerp(self.ui_title_pos, self.center, t)
+    #     self.text_buffer["title"]["scale"] = lerp(1, 1.4, t)
+    #     self.text_buffer["next"]["opacity"] = lerp(0, 1, t)
 
     def update(self):
         self.surf.fill((0, 0, 0, 0))
-        if self.music.finished:
-            self.when_finish()
+
+        if self.music.finished or self.music.is_paused:
+            t = bezier(0.833, 0.889, 0.089, 0.993, clamp(time.time() - self.t, 0, 1))[1]
+        else:
+            t = (
+                1
+                - bezier(0.833, 0.889, 0.089, 0.993, clamp(time.time() - self.t, 0, 1))[
+                    1
+                ]
+            )
+        self.menu(t)
+
         self.counter += 1
 
         if self.counter % 10 == 0:
@@ -106,6 +122,18 @@ class UI:
         # surf.blit(self.surf, (0, 0))
         for text in self.text_buffer.values():
             # color = pygame.Color(text.get("color", "white"))
+            # s = self.rndl.render(
+            #     text["text"],
+            #     text.get("color", "white"),
+            #     secoundary=text.get("secondary", "white"),
+            # )
+            # ms = pygame.Surface(s.get_size(), pygame.SRCALPHA)
+            # # ms.fill((0, 0, 0, 0))
+            # ms.blit(s, (0, 0))
+            # # ms.fill((255, 255, 255, 0), special_flags=pygame.BLEND_RGBA_MULT)
+            # surf.blit(ms, text.get("pos", (0, 0)))
+            # surf.blit(ms, text.get("pos", (0, 0)))
+
             Sprite(
                 self.rndl.render(
                     text["text"],
@@ -113,7 +141,10 @@ class UI:
                     secoundary=text.get("secondary", "white"),
                 )
             ).scale_nrom(text.get("scale", 1)).render(
-                surf, text.get("pos", (0, 0)), text.get("anchor", (0, 0)), opacity=0
+                surf,
+                text.get("pos", (0, 0)),
+                text.get("anchor", (0, 0)),
+                opacity=text.get("opacity", 1),
             )
 
         # self.rnd_sprite.render(surf, (self.center[0], 15), (0, 0))

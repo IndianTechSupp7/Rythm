@@ -2,6 +2,18 @@
     "song": "greedy.mp3",
     "bpm": 112.34714673913044,
     "sample_rate": 22050,
+    "max": {
+        "tom": 0.7,
+        "kick": 1.0,
+        "cym": 0.6,
+        "snr": 0.8
+    },
+    "min": {
+        "tom": 0.4,
+        "kick": 0.0,
+        "cym": 0.3,
+        "snr": 0.3
+    },
     "tracks": {
         "Kick": [
             {

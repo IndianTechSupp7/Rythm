@@ -40,6 +40,11 @@ class AssetManager:
             i.split("\\")[-1]: i for i in self.search((".glsl"), "/shaders")
         }
 
+    def reset_beatmaps(self):
+        self.beatmaps = {
+            i.split("\\")[-1]: get_json(i) for i in self.search(("json"), "\\beatmaps")
+        }
+
     def save_config(self, name, data):
         write_json(self.BASE_ASSETS_FOLDER + f"/config/{name}.json", data)
 
