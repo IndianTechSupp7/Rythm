@@ -112,6 +112,7 @@ class Node:
                             thickness=random.random() * 0.3,
                         )
                     )
+                    
             for _ in range(3):
                 self.game.particleManager.add_particle(
                     Bit(
