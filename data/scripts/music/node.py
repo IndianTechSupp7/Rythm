@@ -1,8 +1,6 @@
 import random
-from turtle import color, rt
 import numpy as np
 import pygame
-from torch import rand
 
 from data.scripts.particles import Bit, Circle, Physics, Spark
 from data.scripts.ui.letter import RandLetter
@@ -112,7 +110,7 @@ class Node:
                             thickness=random.random() * 0.3,
                         )
                     )
-                    
+
             for _ in range(3):
                 self.game.particleManager.add_particle(
                     Bit(
