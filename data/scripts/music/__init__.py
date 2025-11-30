@@ -1,16 +1,14 @@
-from ast import Not
 from csv import Error
 import random
 import time
-from typing import Text
-from networkx import is_path
+import numpy as np
 import pygame
 from pygame_shaders import Shader, DEFAULT_VERTEX_SHADER, Texture
-from scipy import sparse
-from data.scripts.asset_magare import AssetManager
-from data.scripts.music.ui import UI
+
+from data.scripts.particles import Manager
+from .ui import UI
 from data.scripts.scene import Scene
-from data.scripts.utilities import bezier, clamp, lerp, lerp_color
+from data.scripts.utilities import lerp_color
 from .node import Node
 from .controller import Controller
 
@@ -54,11 +52,15 @@ class Music(Scene):
             lambda: self.change_theme(None, [random.randint(0, 255) for i in range(3)]),
             "press",
         )
+        # self.input.add_callback("continue", self.shake)
 
     def setup(self):
         self.is_paused = False
         self.assets.reset_beatmaps()
         self.game.set_cursor(False)
+
+        self.particleManager = Manager(self)
+        self.circleParticleManager = Manager(self)
 
         # self.assets: AssetManager = self.game.assets
         # self.center = self.center
@@ -69,6 +71,7 @@ class Music(Scene):
         self.current_time = 0
         self.color_timer = 0
         self.start_time = time.time()
+        self.progress = self.assets.configs["level"]["songs"][self.current_song_name][2]
         # self.full_time = max(
         #     self.current_beatmap["tracks"]["Tom"][-1]["time"],
         #     self.current_beatmap["tracks"]["Cymbal"][-1]["time"],
@@ -149,6 +152,7 @@ class Music(Scene):
 
         self.ui = UI(self)
         self.background = pygame.Surface(self.surf.get_size())
+        self.cicrles = pygame.Surface(self.surf.get_size())
         self.setup_bg()
         self.bg_shader = Shader(
             DEFAULT_VERTEX_SHADER, self.assets.shaders["music_bg.glsl"], self.surf
@@ -157,9 +161,16 @@ class Music(Scene):
             self.assets.images["noise.png"], self.bg_shader.ctx
         )
         self.bg_texture = Texture(self.background, self.bg_shader.ctx)
+        self.cicrles_texture = Texture(self.cicrles, self.bg_shader.ctx)
         self.secondary = "#25246b"
         self._prev_color = (0, 0, 0, 0)
         self._current_color = (0, 0, 0, 0)
+
+        self.render_offset = np.array((0, 0))
+        self._screen_shake = 0
+        self._screen_shake_strength = 0.7
+        self._screen_shake_speed = 20
+        self._blur_stength = 0.6
 
         # self.bright = Shader(DEFAULT_VERTEX_SHADER, "bright.glsl", self.surf)
         # self.blur = Shader(DEFAULT_VERTEX_SHADER, "blur.glsl", self.surf)
@@ -208,14 +219,19 @@ class Music(Scene):
 
         # self.current_time = time.time() - self.start_time
 
+    def shake(self):
+        self._screen_shake = 6
+        # self._blur_stength = 1.8
+
     def update(self, dt, **kwargs):
         self.surf.fill((0, 0, 0, 0))
         if not self.is_paused:
             if not self.in_tutorial:
-                if round(time.time(), 2) % AUTO_SAVE == 0:
-                    data = self.assets.configs["level"]
-                    data["songs"][self.current_song_name][2] = self.full_time
-                    self.assets.save_config("level", data)
+                if self.full_time > self.progress:
+                    if round(time.time(), 2) % AUTO_SAVE == 0:
+                        data = self.assets.configs["level"]
+                        data["songs"][self.current_song_name][2] = self.full_time
+                        self.assets.save_config("level", data)
                 # self.surf.fill("#1f102a")
                 # self.surf.blit(self.background, (0, 0))
 
@@ -260,29 +276,44 @@ class Music(Scene):
             self.bg_shader.send("vg_color", list(self._current_color.normalize())[:3])
             # self.bg_shader.send("vg_color", (1., 0., 0.))
             self.ui.secondary = self._current_color
+            self._blur_stength = max(0.6, self._blur_stength - 1 * dt)
 
-            self.noise_texture.use(1)
-            self.bg_texture.use(2)
-            self.bg_shader.send("noiseTexture", 1)
-            self.bg_shader.send("bgTexture", 2)
-            self.bg_shader.send("time", self.current_time)
         else:
             if self.input.get_event("continue", "press"):
-                # if self.finished:
-                #     Scene.change_scene("Desktop")
-                # else:
-                #     self.pause()
+                Node.triggered = []
                 Scene.change_scene("Desktop")
-            # if self.input.get_event("menu", "press"):
-            #     print(1)
-            #     Scene.change_scene("Desktop")
-        self.tom.render(self.surf)
-        self.kick.render(self.surf)
-        self.cym.render(self.surf)
-        self.snare.render(self.surf)
+
+        self._screen_shake = max(
+            0, self._screen_shake - self._screen_shake_speed * self.game.dt
+        )
+        if self._screen_shake:
+            self.render_offset[0] = (
+                (random.random() * self._screen_shake - self._screen_shake / 2)
+            ) * self._screen_shake_strength
+            self.render_offset[1] = (
+                (random.random() * self._screen_shake - self._screen_shake / 2)
+            ) * self._screen_shake_strength
+
+        self.particleManager.update(dt)
+        self.particleManager.render(self.surf, self.render_offset)
+        self.circleParticleManager.update(dt)
+        self.circleParticleManager.render(self.cicrles, self.render_offset)
+
+        self.tom.render(self.surf, self.render_offset)
+        self.kick.render(self.surf, self.render_offset)
+        self.cym.render(self.surf, self.render_offset)
+        self.snare.render(self.surf, self.render_offset)
 
         self.ui.update()
-        self.ui.render(self.surf)
+        self.ui.render(self.surf, self.render_offset)
+        self.noise_texture.use(1)
+        self.bg_texture.use(2)
+        self.cicrles_texture.use(3)
+        self.bg_shader.send("noiseTexture", 1)
+        self.bg_shader.send("bgTexture", 2)
+        self.bg_shader.send("circlesTexture", 3)
+        self.bg_shader.send("strength", self._blur_stength)
+        self.bg_shader.send("time", self.current_time)
         return self.bg_shader.render()
 
     def setup_bg(self):

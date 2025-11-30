@@ -49,10 +49,15 @@ class StartUp(Scene):
         self.stars_tex = Texture(self.stars_surf.surf, self.background.ctx)
 
         self.background.send("uTexSize", self.surf.get_size())
-        self.background.send("bg", pygame.Color("#1f102a").normalize()[:3])
-        self.background.send("color3", pygame.Color("#390947").normalize()[:3])
-        self.background.send("color2", pygame.Color("#611851").normalize()[:3])
-        self.background.send("color1", pygame.Color("#751756").normalize()[:3])
+        # self.background.send("bg", pygame.Color("#1f102a").normalize()[:3])
+        # self.background.send("color3", pygame.Color("#390947").normalize()[:3])
+        # self.background.send("color2", pygame.Color("#611851").normalize()[:3])
+        # self.background.send("color1", pygame.Color("#751756").normalize()[:3])
+
+        self.background.send("bg", pygame.Color("#0a0a2e").normalize()[:3])
+        self.background.send("color3", pygame.Color("#1a1a78").normalize()[:3])
+        self.background.send("color2", pygame.Color("#4444cf").normalize()[:3])
+        self.background.send("color1", pygame.Color("#5d74f9").normalize()[:3])
 
         self.input.add_callback("enter", lambda: Scene.change_scene("Desktop"))
         self.start_time = time.time()

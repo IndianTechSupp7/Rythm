@@ -3,7 +3,7 @@ import numpy as np
 import pygame
 from data.scripts.utilities import bezier, lerp, clamp
 from data.scripts.sprite import Sprite
-from .letter import RandLetter
+from data.scripts.ui import RandLetter
 
 
 class UI:
@@ -90,11 +90,15 @@ class UI:
             self.text_buffer["title"]["secondary"] = self.secondary
 
             # self.rnd_sprite.surf = self.rndl.render(self.text[self.index :], "#751756")
-        self.index = int(len(self.base_text) * self.music.full_time)
-        self.text = [
-            ch if i <= self.index or ch == " " else "#"
-            for i, ch in enumerate(self.base_text)
-        ]
+        self.index = int(
+            len(self.base_text) * max(self.music.full_time, self.music.progress)
+        )
+        self.text = "".join(
+            [
+                ch if i <= self.index or ch == " " else "#"
+                for i, ch in enumerate(self.base_text)
+            ]
+        )
 
         # self.title_pos[0] = move_towards(
         #     self.title_pos[0], self.target_title_pos[0], 100, self.game.dt
@@ -117,7 +121,7 @@ class UI:
         #         text.get("anchor", (0, 0)),
         #     )
 
-    def render(self, surf):
+    def render(self, surf, offset=np.array((0, 0))):
         # self.surf.set_alpha(0)
         # surf.blit(self.surf, (0, 0))
         for text in self.text_buffer.values():
@@ -142,7 +146,7 @@ class UI:
                 )
             ).scale_nrom(text.get("scale", 1)).render(
                 surf,
-                text.get("pos", (0, 0)),
+                text.get("pos", (0, 0)) - offset,
                 text.get("anchor", (0, 0)),
                 opacity=text.get("opacity", 1),
             )

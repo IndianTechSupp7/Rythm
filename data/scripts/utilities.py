@@ -1,4 +1,5 @@
 import json
+from math import sin
 from sys import flags
 import numpy as np
 import pygame
@@ -19,6 +20,10 @@ def bezier(a: float, b: float, c: float, d: float, t: float):
         + 1 * t**3
     )
     return x, y
+
+
+def adjuts(pos, a, l):
+    return pos + np.array((np.cos(a), np.sin(a))) * l
 
 
 def move_towards(x, target, speed, dt):

@@ -1,7 +1,9 @@
+import random
 import pygame
 from random import randint
 import numpy as np
 from data.scripts.desktop.desktop import DesktopGrid, Table
+from data.scripts.particles import Circle, Manager, Spark
 from data.scripts.scene import Scene
 from data.scripts.sprite import Sprite
 from pygame_shaders import (
@@ -26,6 +28,7 @@ class Desktop(Scene):
             DEFAULT_VERTEX_SHADER, self.assets.shaders["desktop_bg.glsl"], self.surf
         )
 
+        self.pManager = Manager(self)
 
         self.stars_surf = Sprite(self.size)
         self.stars = [
@@ -46,13 +49,17 @@ class Desktop(Scene):
         self.time = 0
 
         self.background.send("uTexSize", self.surf.get_size())
-        self.background.send("bg", pygame.Color("#1f102a").normalize()[:3])
-        self.background.send("color3", pygame.Color("#390947").normalize()[:3])
-        self.background.send("color2", pygame.Color("#611851").normalize()[:3])
-        self.background.send("color1", pygame.Color("#751756").normalize()[:3])
+        # self.background.send("bg", pygame.Color("#1f102a").normalize()[:3])
+        # self.background.send("color3", pygame.Color("#390947").normalize()[:3])
+        # self.background.send("color2", pygame.Color("#611851").normalize()[:3])
+        # self.background.send("color1", pygame.Color("#751756").normalize()[:3])
 
+        self.background.send("bg", pygame.Color("#0a0a2e").normalize()[:3])
+        self.background.send("color3", pygame.Color("#1a1a78").normalize()[:3])
+        self.background.send("color2", pygame.Color("#4444cf").normalize()[:3])
+        self.background.send("color1", pygame.Color("#5d74f9").normalize()[:3])
 
-    def update(self, **kwargs):
+    def update(self, dt, **kwargs):
         self.surf.fill((0, 0, 0, 0))
         self.time += 1 * self.game.dt
         self.render_stars(self.time * 0.3)
@@ -65,9 +72,27 @@ class Desktop(Scene):
         # TODO: meh ####
         # self.moon.render(self.surf, (300, 50))
 
-        self.desktop.update(self.game.dt)
+        # if self.mouse["press"][0]:
+        #     amount = random.randint(7, 12)
+        #     for i in range(amount):
+        #         angle = (np.pi*2 / amount)*i
+        #         self.pManager.add_particle(
+        #             Spark(
+        #                 self.mouse["pos"],
+        #                 #random.random() * np.pi * 2,
+        #                 dir=angle,
+        #                 speed=random.randint(30, 40),
+        #                 size=random.randint(5, 10),
+        #                 thickness=random.random() * 0.3,
+        #             )
+        #         )
+
+        self.desktop.update(dt)
         self.desktop.render(self.surf)
         self.table.render(self.surf)
+
+        self.pManager.update(dt)
+        self.pManager.render(self.surf)
 
         self.stars_tex.update(self.stars_surf.surf)
         self.stars_tex.use(2)

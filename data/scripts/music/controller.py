@@ -12,14 +12,23 @@ from data.scripts.input import Input
 
 IMG_SCALE = 2
 BBOX = (10, 10)
+HIT_LINE_TOLERANCE = 10
 
 
 class Btn:
     def __init__(
-        self, game, nodes, pos, key, sheet: list[pygame.Surface], anchor_point=(1, 1)
+        self,
+        game,
+        nodes,
+        hit_line,
+        pos,
+        key,
+        sheet: list[pygame.Surface],
+        anchor_point=(1, 1),
     ):
         self.game = game
         self.nodes = nodes
+        self.hit_line = hit_line
         self.input: Input = self.game.input
 
         self.anchor_point = np.array(anchor_point)
@@ -70,7 +79,8 @@ class Btn:
         )
         for node in self.nodes:
             if self.rect.inflate(*BBOX).colliderect(node.rect):
-                node.collide()
+                perfect = abs(node.pos[1] - self.hit_line) <= HIT_LINE_TOLERANCE
+                node.collide(perfect)
 
     def reset(self):
         self.press = False
@@ -122,7 +132,7 @@ class Controller:
             game=self.game,
             beatmap=self.beatmap,
             hit_line_y=self.hit_line_y,
-            start=self.start_pos[1],
+            start=self.start_pos,
             note_speed=self.note_speed,
             strength_min=self.min_strength,
             strength_max=self.max_strength,
@@ -135,10 +145,11 @@ class Controller:
         self.btn = Btn(
             game=self.game,
             nodes=self.nodes,
+            hit_line=self.hit_line_y,
             pos=(self.start_pos[0], self.hit_line_y),
             key=self.note,
             sheet=self.assets.images[self.note],
-            anchor_point=(0, 0.5),
+            anchor_point=(0, 1.0),
         )
         self.entering = abs(self.center[0] - self.start_pos[0]) * 0.01
         self.in_tutorial = True
@@ -173,19 +184,18 @@ class Controller:
                 )
                 self.in_tutorial = False
 
-    def render(self, surf):
-        # pygame.draw.line(
-        #     surf, "white", (0, self.hit_line_y), (self.game.game.w, self.hit_line_y)
-        # )
+    def render(self, surf, offset=np.array((0, 0))):
+        pygame.draw.line(
+            surf, "white", (0, self.hit_line_y), (self.game.game.w, self.hit_line_y)
+        )
 
         # pygame.draw.line(
         #     surf, "blue", (100, self.hit_line_y - 20), (100, self.hit_line_y + 20)
         # )
         if self.game.in_tutorial:
             self.tut.render(surf, (self.start_pos[0], self.game.center[1]))
-
         self.entering = max(0, min(1, self.entering + 0.03))
         e = 1 - bezier(0.187, 0.627, 0.762, 1.256, self.entering)[1]
         for node in self.nodes[::-1]:
-            node.render(surf, (-self.start_pos[0], 0))
-        self.btn.render(surf, (0, -(e * 70)))
+            node.render(surf, offset)
+        self.btn.render(surf, (0, -(e * 70)) - offset)
