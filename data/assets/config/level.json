@@ -11,7 +11,7 @@
         "cym": 0.0,
         "snr": 0.0
     },
-    "startup": true,
+    "startup": false,
     "songs": {
         "Angeleyes": [
             5,
@@ -69,9 +69,9 @@
             0
         ],
         "Maradok távol": [
-            5,
+            6,
             3,
-            0
+            1.0791292685443103
         ],
         "Táncol Velem A Világ": [
             14,
