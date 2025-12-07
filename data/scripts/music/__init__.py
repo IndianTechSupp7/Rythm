@@ -67,6 +67,8 @@ class Music(Scene):
         self.menu = Menu(self)
         self.table = Table(self)
 
+        self.enable_shaders = self.game.shaders
+
         # self.assets: AssetManager = self.game.assets
         # self.center = self.center
 
@@ -319,15 +321,17 @@ class Music(Scene):
         if self.is_paused:
             self.menu.render(self.surf)
             self.table.render(self.surf)
-        self.noise_texture.use(1)
-        self.bg_texture.use(2)
-        self.cicrles_texture.use(3)
-        self.bg_shader.send("noiseTexture", 1)
-        self.bg_shader.send("bgTexture", 2)
-        self.bg_shader.send("circlesTexture", 3)
-        self.bg_shader.send("strength", self._blur_stength)
-        self.bg_shader.send("time", self.current_time)
-        return self.bg_shader.render()
+        if self.game.shaders:
+            self.noise_texture.use(1)
+            self.bg_texture.use(2)
+            self.cicrles_texture.use(3)
+            self.bg_shader.send("noiseTexture", 1)
+            self.bg_shader.send("bgTexture", 2)
+            self.bg_shader.send("circlesTexture", 3)
+            self.bg_shader.send("strength", self._blur_stength)
+            self.bg_shader.send("time", self.current_time)
+            return self.bg_shader.render()
+        return self.surf
 
     def setup_bg(self):
         ROW = 10

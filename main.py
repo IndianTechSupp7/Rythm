@@ -40,6 +40,7 @@ class Game(ShaderWindow):
         self.cursor = Sprite(self.assets.images["cursor.png"])
         self._show_cursor = True
 
+        self.shaders = self.assets.configs["settings"]["shaders"]
         self._show_fps = self.assets.configs["settings"]["fps"]
         self.font = RandLetter(self, 3)
         self.font.add_text(
@@ -60,7 +61,7 @@ class Game(ShaderWindow):
 
     def update(self):
         pygame.display.set_caption(str(self.clock.get_fps()))
-        self.display.fill("#1f102a")
+        self.display.fill("#0a0a2e")
         self.center = np.array((self.w / 2, self.h / 2))
 
         # surfs = Scene.update_scenes(self)

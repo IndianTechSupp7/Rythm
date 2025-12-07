@@ -140,8 +140,8 @@ class Node:
             # if abs(self.pos[1] - self.hit_line) < 3:
             #     pygame.draw.circle(surf, "blue", self.pos - offset, 15)
             self.sprite.render(surf, self.pos - offset)
-            self.strength.pos = self.pos - offset
-            self.strength.render(surf)
+            # self.strength.pos = self.pos - offset
+            # self.strength.render(surf)
             self.overlay.render(surf, self.pos - offset, opacity=self.overlay_alpha)
         # pygame.draw.circle(surf, "red", self.pos - offset, 3)
         # pygame.draw.rect(surf, "red", self.rect)

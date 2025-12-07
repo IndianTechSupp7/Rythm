@@ -185,7 +185,29 @@ class Menu:
                 )
                 .add_callback(self._on_display_mode_change),
             },
-            "Developer": {
+            "Grafika": {
+                "shardes": CheckBox(
+                    self.scene,
+                    pos=(80, 0),
+                    anchors=(1, 0),
+                    default=self.scene.assets.configs["settings"]["hitline"],
+                ).add_callback(
+                    lambda x: [
+                        setattr(self.scene.game, "shaders", x.is_enabled),
+                        self.scene.assets.save_config(
+                            "settings", {"shaders": x.is_enabled}
+                        ),
+                    ]
+                ),
+                "shardes_label": self.font.add_text(
+                    pos=(20, 0),
+                    name="hitline",
+                    text="Shaderek",
+                    color="white",
+                    anchors=(1, 0),
+                ),
+            },
+            "fejlezstői Beálítások": {
                 "hitline": CheckBox(
                     self.scene,
                     pos=(80, 0),
