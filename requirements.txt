@@ -1,4 +1,4 @@
-libs/pgwindow-0.1.2-py3-none-any.whl
+libs/pgwindow-0.1.3-py3-none-any.whl
 pygame-shaders
 numpy
 pygame_ce
