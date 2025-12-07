@@ -190,7 +190,7 @@ class Menu:
                     self.scene,
                     pos=(80, 0),
                     anchors=(1, 0),
-                    default=self.scene.assets.configs["settings"]["shardes"],
+                    default=self.scene.assets.configs["settings"]["shaders"],
                 ).add_callback(
                     lambda x: [
                         setattr(self.scene.game, "shaders", x.is_enabled),
