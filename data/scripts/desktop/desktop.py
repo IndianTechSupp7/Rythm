@@ -190,7 +190,7 @@ class Menu:
                     self.scene,
                     pos=(80, 0),
                     anchors=(1, 0),
-                    default=self.scene.assets.configs["settings"]["hitline"],
+                    default=self.scene.assets.configs["settings"]["shardes"],
                 ).add_callback(
                     lambda x: [
                         setattr(self.scene.game, "shaders", x.is_enabled),
@@ -214,9 +214,12 @@ class Menu:
                     anchors=(1, 0),
                     default=self.scene.assets.configs["settings"]["hitline"],
                 ).add_callback(
-                    lambda x: self.scene.assets.save_config(
-                        "settings", {"hitline": x.is_enabled}
-                    )
+                    lambda x: [
+                        self.scene.assets.save_config(
+                            "settings", {"hitline": x.is_enabled}
+                        ),
+                        setattr(self.scene.game, "show_hitline", x.is_enabled),
+                    ]
                 ),
                 "hitline_label": self.font.add_text(
                     pos=(20, 0),

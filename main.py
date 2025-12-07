@@ -41,6 +41,7 @@ class Game(ShaderWindow):
         self._show_cursor = True
 
         self.shaders = self.assets.configs["settings"]["shaders"]
+        self.show_hitline = self.assets.configs["settings"]["hitline"]
         self._show_fps = self.assets.configs["settings"]["fps"]
         self.font = RandLetter(self, 3)
         self.font.add_text(

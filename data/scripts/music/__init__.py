@@ -68,6 +68,7 @@ class Music(Scene):
         self.table = Table(self)
 
         self.enable_shaders = self.game.shaders
+        self.show_hitline = self.game.show_hitline
 
         # self.assets: AssetManager = self.game.assets
         # self.center = self.center
@@ -171,7 +172,7 @@ class Music(Scene):
         self.cicrles_texture = Texture(self.cicrles, self.bg_shader.ctx)
         self.secondary = "#25246b"
         self._prev_color = (0, 0, 0, 0)
-        self._current_color = (0, 0, 0, 0)
+        self._current_color = (255, 255, 255, 50)
 
         self.render_offset = np.array((0, 0))
         self._screen_shake = 0
@@ -226,7 +227,7 @@ class Music(Scene):
         self.start_time = time.time()
         self.color_timer = time.time() - self.start_time
         self.current_time = time.time() - self.start_time
-        self.change_theme(self.current_beatmap.get("color", (0, 0, 0, 0)))
+        self.change_theme(self.current_beatmap.get("color", (255, 255, 255, 50)))
 
         # self.current_time = time.time() - self.start_time
 
@@ -276,14 +277,18 @@ class Music(Scene):
             self.cym.update(dt, self.current_time)
             self.snare.update(dt, self.current_time)
 
-            self._current_color = lerp_color(
-                self.secondary,
-                # "#751756",
-                self._prev_color,
-                min(self.current_time - self.color_timer, BG_ANIM_TIME) / BG_ANIM_TIME,
-            )
+            if self.game.shaders:
+                self._current_color = lerp_color(
+                    self.secondary,
+                    # "#751756",
+                    self._prev_color,
+                    min(self.current_time - self.color_timer, BG_ANIM_TIME)
+                    / BG_ANIM_TIME,
+                )
 
-            self.bg_shader.send("vg_color", list(self._current_color.normalize())[:3])
+                self.bg_shader.send(
+                    "vg_color", list(self._current_color.normalize())[:3]
+                )
             # self.bg_shader.send("vg_color", (1., 0., 0.))
             self.ui.secondary = self._current_color
             self._blur_stength = max(0.6, self._blur_stength - 1 * dt)

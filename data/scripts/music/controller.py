@@ -193,9 +193,10 @@ class Controller:
                 self.in_tutorial = False
 
     def render(self, surf, offset=np.array((0, 0))):
-        pygame.draw.line(
-            surf, "white", (0, self.hit_line_y), (self.game.game.w, self.hit_line_y)
-        )
+        if self.game.game.show_hitline:
+            pygame.draw.line(
+                surf, "white", (0, self.hit_line_y), (self.game.game.w, self.hit_line_y)
+            )
 
         # pygame.draw.line(
         #     surf, "blue", (100, self.hit_line_y - 20), (100, self.hit_line_y + 20)
