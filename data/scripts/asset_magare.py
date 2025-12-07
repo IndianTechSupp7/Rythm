@@ -46,7 +46,11 @@ class AssetManager:
         }
 
     def save_config(self, name, data):
-        write_json(self.BASE_ASSETS_FOLDER + f"/config/{name}.json", data)
+        path = f"{self.BASE_ASSETS_FOLDER}/config/{name}.json"
+        prev = self.configs[name]
+        prev.update(data)
+        write_json(path, prev)
+        self.configs[name] = get_json(path)
 
     def search(self, exts: list | tuple, base=""):
         path = self.BASE_ASSETS_FOLDER + base

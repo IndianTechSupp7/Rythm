@@ -149,19 +149,26 @@ class Controller:
             pos=(self.start_pos[0], self.hit_line_y),
             key=self.note,
             sheet=self.assets.images[self.note],
-            anchor_point=(0, 1.0),
+            anchor_point=(0, 0.5),
         )
         self.entering = abs(self.center[0] - self.start_pos[0]) * 0.01
         self.in_tutorial = True
         self.font = RandLetter(self.game, font_size=3)
-        self.alpha = 100
-        self.tut = Sprite(
-            self.font.render(
-                self.assets.configs["binds"].get(self.note)[0],
-                "white",
-                alpha=self.alpha,
-            )
+        self.opacity = 0.3
+        self.tut = self.font.add_text(
+            name="tutorial",
+            text=self.assets.configs["binds"].get(self.note)[0],
+            opacity=self.opacity,
+            pos=(self.start_pos[0], self.game.center[1]),
         )
+
+        # self.tut = Sprite(
+        #     self.font.render(
+        #         self.assets.configs["binds"].get(self.note)[0],
+        #         "white",
+        #         alpha=self.alpha,
+        #     )
+        # )
 
     def update(self, dt, current_time):
         if not self.game.in_tutorial:
@@ -176,12 +183,13 @@ class Controller:
             self.btn.update((-self.start_pos[0], 0), nodes)
         else:
             if self.btn.press:
-                self.alpha = 250
-                self.tut.surf = self.font.render(
-                    self.assets.configs["binds"].get(self.note)[0],
-                    "white",
-                    alpha=self.alpha,
-                )
+                self.opacity = 1
+                self.tut.opacity = self.opacity
+                # self.tut.color = "white"
+                #     self.assets.configs["binds"].get(self.note)[0],
+                #     "white",
+                #     alpha=self.alpha,
+                # )
                 self.in_tutorial = False
 
     def render(self, surf, offset=np.array((0, 0))):
@@ -193,7 +201,7 @@ class Controller:
         #     surf, "blue", (100, self.hit_line_y - 20), (100, self.hit_line_y + 20)
         # )
         if self.game.in_tutorial:
-            self.tut.render(surf, (self.start_pos[0], self.game.center[1]))
+            self.tut.render(surf)
         self.entering = max(0, min(1, self.entering + 0.03))
         e = 1 - bezier(0.187, 0.627, 0.762, 1.256, self.entering)[1]
         for node in self.nodes[::-1]:

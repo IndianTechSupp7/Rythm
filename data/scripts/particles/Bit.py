@@ -14,7 +14,9 @@ class Bit(Physics):
         self.color = color
 
         self.font = RandLetter(self.scene)
-        self.sprite = Sprite(
-            self.font.render(random.randint(0, 1), color=self.color)
-        ).scale_nrom(self.scale)
+        self.font.add_text(name="bit", text=random.randint(0, 1), color=self.color)
+        self.sprite = self.font["bit"].get_render().scale_nrom(self.scale)
+        # self.sprite = Sprite(
+        #     self.font.render(random.randint(0, 1), color=self.color)
+        # ).scale_nrom(self.scale)
         self.life_time = 5

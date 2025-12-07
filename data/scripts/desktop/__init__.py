@@ -1,8 +1,9 @@
 import random
+from .dialog import Dialog
 import pygame
 from random import randint
 import numpy as np
-from data.scripts.desktop.desktop import DesktopGrid, Table
+from data.scripts.desktop.desktop import DesktopGrid, Menu, Table
 from data.scripts.particles import Circle, Manager, Spark
 from data.scripts.scene import Scene
 from data.scripts.sprite import Sprite
@@ -10,7 +11,6 @@ from pygame_shaders import (
     Shader,
     Texture,
     DEFAULT_VERTEX_SHADER,
-    DEFAULT_FRAGMENT_SHADER,
 )
 
 STAR_AMOUNT = 50
@@ -20,6 +20,46 @@ class Desktop(Scene):
     def __init__(self):
         super().__init__(display_scale=0.5)
         self.desktop = DesktopGrid(self)
+        if self.assets.configs["level"]["startup"]:
+            self.assets.save_config("level", {"startup": False})
+            self.dialogs = [
+                Dialog(
+                    self,
+                    self.center,
+                    (150, 100),
+                    msg="Tönkretettem \n a kedvenc zene fájljaidat \n HAHAHAH",
+                    max_width=150,
+                    title="vírus.exe",
+                    on_press=lambda: self.dialogs.append(
+                        Dialog(
+                            self,
+                            self.center
+                            - (
+                                random.randint(-50, 50),
+                                random.randint(-50, 50),
+                            ),
+                            (150, 80),
+                            msg="Talán leközelebb \n ne torrentezz jatekokat :)",
+                            title="vírus.exe",
+                            on_press=lambda: self.dialogs.append(
+                                Dialog(
+                                    self,
+                                    self.center
+                                    - (
+                                        random.randint(-50, 50),
+                                        random.randint(-50, 50),
+                                    ),
+                                    (150, 70),
+                                    msg="Sok sikert a feltöréshez HAHA",
+                                    title="vírus.exe",
+                                ).setup()
+                            ),
+                        ).setup()
+                    ),
+                )
+            ]
+        else:
+            self.dialogs = []
 
     def setup(self, **kwargs):
         self.game.set_cursor(True)
@@ -27,8 +67,6 @@ class Desktop(Scene):
         self.background = Shader(
             DEFAULT_VERTEX_SHADER, self.assets.shaders["desktop_bg.glsl"], self.surf
         )
-
-        self.pManager = Manager(self)
 
         self.stars_surf = Sprite(self.size)
         self.stars = [
@@ -46,7 +84,10 @@ class Desktop(Scene):
 
         # self.desktop =
         self.table = Table(self)
+        self.menu = Menu(self)
         self.time = 0
+        for dialog in self.dialogs:
+            dialog.setup()
 
         self.background.send("uTexSize", self.surf.get_size())
         # self.background.send("bg", pygame.Color("#1f102a").normalize()[:3])
@@ -86,13 +127,18 @@ class Desktop(Scene):
         #                 thickness=random.random() * 0.3,
         #             )
         #         )
+        if not self.dialogs and not self.menu.is_open:
+            self.desktop.update(dt)
+        self.table.update()
 
-        self.desktop.update(dt)
+        self.menu.update(dt=dt)
         self.desktop.render(self.surf)
-        self.table.render(self.surf)
+        for dialog in self.dialogs:
+            dialog.update()
+            dialog.render(self.surf)
 
-        self.pManager.update(dt)
-        self.pManager.render(self.surf)
+        self.menu.render(self.surf)
+        self.table.render(self.surf)
 
         self.stars_tex.update(self.stars_surf.surf)
         self.stars_tex.use(2)

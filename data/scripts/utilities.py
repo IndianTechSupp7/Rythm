@@ -70,8 +70,12 @@ def get_json(path):
 
 
 def write_json(path, data):
-    with open(path, "w", encoding="utf-8") as file:
-        data = json.dump(data, file)
+    with open(
+        path,
+        "w",
+        encoding="utf-8",
+    ) as file:
+        data = json.dump(data, file, ensure_ascii=False, indent=4)
     return data
 
 

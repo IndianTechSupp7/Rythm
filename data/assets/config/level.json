@@ -1,1 +1,107 @@
-{"max": {"tom": 1.0, "kick": 1.0, "cym": 1.0, "snr": 1.0}, "min": {"tom": 0.0, "kick": 0.0, "cym": 0.0, "snr": 0.0}, "songs": {"Angeleyes": [1, 1, 1.2488532110091743], "Belehalok": [17, 7, 0.0], "S\u00f3 F\u00e9": [7, 7, 0.0], "Rakpart": [5, 1, 1.1853582554517135], "Blame": [1, 5, 1.2322611163670767], "Porszem": [1, 7, 0.0], "greedy": [16, 2, 0.0], "Claw Marks": [3, 1, 0.31182212581344904], "Szerelemre sz\u00fclettem": [2, 3, 0.8167483159828536], "Amikor Feladn\u00e1d": [4, 7, 0.0], "Team": [7, 2, 1.0780669144981412], "Maradok t\u00e1vol": [10, 3, 1.2383936861652738], "T\u00e1ncol Velem A Vil\u00e1g": [10, 6, 0.711249182472204], "Mindenki t\u00e1ncol": [7, 5, 0.5638015064244573], "Sz\u00edvedb\u0151l minden kell": [11, 5, 1.2257543103448274], "Ahol A M\u00e1jus F\u00f6ldet \u00c9r": [6, 3, 1.2422839506172838], "So Am I": [4, 5, 1.1578707916287534], "Ghost - Square Hammer": [10, 1, 1.2323766364551862]}}
+{
+    "max": {
+        "tom": 1.0,
+        "kick": 1.0,
+        "cym": 1.0,
+        "snr": 1.0
+    },
+    "min": {
+        "tom": 0.0,
+        "kick": 0.0,
+        "cym": 0.0,
+        "snr": 0.0
+    },
+    "startup": true,
+    "songs": {
+        "Angeleyes": [
+            5,
+            1,
+            0
+        ],
+        "Belehalok": [
+            11,
+            1,
+            0
+        ],
+        "Só Fé": [
+            1,
+            1,
+            0
+        ],
+        "Rakpart": [
+            3,
+            3,
+            0
+        ],
+        "Blame": [
+            8,
+            1,
+            0
+        ],
+        "Porszem": [
+            8,
+            6,
+            0.0
+        ],
+        "greedy": [
+            16,
+            3,
+            0
+        ],
+        "Claw Marks": [
+            1,
+            3,
+            0
+        ],
+        "Szerelemre születtem": [
+            14,
+            5,
+            0
+        ],
+        "Amikor Feladnád": [
+            14,
+            1,
+            0
+        ],
+        "Team": [
+            11,
+            3,
+            0
+        ],
+        "Maradok távol": [
+            5,
+            3,
+            0
+        ],
+        "Táncol Velem A Világ": [
+            14,
+            3,
+            0
+        ],
+        "Mindenki táncol": [
+            12,
+            6,
+            0
+        ],
+        "Szívedből minden kell": [
+            3,
+            1,
+            0
+        ],
+        "Ahol A Május Földet Ér": [
+            9,
+            3,
+            0
+        ],
+        "So Am I": [
+            2,
+            5,
+            0
+        ],
+        "Ghost - Square Hammer": [
+            5,
+            5,
+            0
+        ]
+    }
+}

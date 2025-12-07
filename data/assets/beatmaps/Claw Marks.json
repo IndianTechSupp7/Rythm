@@ -2,6 +2,7 @@
     "song": "Claw Marks.mp3",
     "bpm": 78.30255681818181,
     "sample_rate": 22050,
+    "color": "#ffffff",
     "tracks": {
         "Kick": [
             {

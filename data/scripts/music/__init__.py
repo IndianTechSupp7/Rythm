@@ -5,6 +5,7 @@ import numpy as np
 import pygame
 from pygame_shaders import Shader, DEFAULT_VERTEX_SHADER, Texture
 
+from data.scripts.desktop.desktop import Menu, Table
 from data.scripts.particles import Manager
 from .ui import UI
 from data.scripts.scene import Scene
@@ -15,7 +16,7 @@ from .controller import Controller
 NOTE_SPACING = 40
 NOTE_SPEED = 200
 Y_OFFSET = -30
-BEAT_TOLERANCE = 0.8
+BEAT_TOLERANCE = 0.9
 BG_ANIM_TIME = 2
 AUTO_SAVE = 5
 
@@ -47,11 +48,11 @@ class Music(Scene):
     def __init__(self):
         super().__init__(display_scale=0.5)
         self.input.add_callback("menu", self.pause, "press")
-        self.input.add_callback(
-            "kick",
-            lambda: self.change_theme(None, [random.randint(0, 255) for i in range(3)]),
-            "press",
-        )
+        # self.input.add_callback(
+        #     "kick",
+        #     lambda: self.change_theme([random.randint(0, 255) for i in range(3)]),
+        #     "press",
+        # )
         # self.input.add_callback("continue", self.shake)
 
     def setup(self):
@@ -61,6 +62,10 @@ class Music(Scene):
 
         self.particleManager = Manager(self)
         self.circleParticleManager = Manager(self)
+        pygame.mixer.music.set_volume(self.game.master_volume)
+
+        self.menu = Menu(self)
+        self.table = Table(self)
 
         # self.assets: AssetManager = self.game.assets
         # self.center = self.center
@@ -194,11 +199,14 @@ class Music(Scene):
     def pause(self):
         self.is_paused = not self.is_paused
         if self.is_paused:
+            self.game.set_cursor(True)
             self.pause_time = time.time()
             pygame.mixer.music.pause()
             for func in self.on_pause:
                 func()
         else:
+            self.menu.close()
+            self.game.set_cursor(False)
             self.start_time += time.time() - self.pause_time
             pygame.mixer.music.unpause()
             for func in self.on_unpause:
@@ -206,7 +214,7 @@ class Music(Scene):
 
         # Scene.change_scene("Desktop")
 
-    def change_theme(self, primary, secoundary):
+    def change_theme(self, secoundary):
         self.color_timer = time.time() - self.start_time
         self._prev_color = self._current_color
         self.secondary = pygame.Color(secoundary)
@@ -216,6 +224,7 @@ class Music(Scene):
         self.start_time = time.time()
         self.color_timer = time.time() - self.start_time
         self.current_time = time.time() - self.start_time
+        self.change_theme(self.current_beatmap.get("color", (0, 0, 0, 0)))
 
         # self.current_time = time.time() - self.start_time
 
@@ -271,7 +280,6 @@ class Music(Scene):
                 self._prev_color,
                 min(self.current_time - self.color_timer, BG_ANIM_TIME) / BG_ANIM_TIME,
             )
-            # print(self._current_color.normalize())
 
             self.bg_shader.send("vg_color", list(self._current_color.normalize())[:3])
             # self.bg_shader.send("vg_color", (1., 0., 0.))
@@ -279,6 +287,8 @@ class Music(Scene):
             self._blur_stength = max(0.6, self._blur_stength - 1 * dt)
 
         else:
+            self.menu.update(dt)
+            self.table.update()
             if self.input.get_event("continue", "press"):
                 Node.triggered = []
                 Scene.change_scene("Desktop")
@@ -306,6 +316,9 @@ class Music(Scene):
 
         self.ui.update()
         self.ui.render(self.surf, self.render_offset)
+        if self.is_paused:
+            self.menu.render(self.surf)
+            self.table.render(self.surf)
         self.noise_texture.use(1)
         self.bg_texture.use(2)
         self.cicrles_texture.use(3)
@@ -321,11 +334,11 @@ class Music(Scene):
         ROW_WIDTH = self.background.width / ROW
         LINE_WIDTH = 1
 
-        self.background.fill("#1f102a")
+        self.background.fill("#0a0a2e")  # 1f102a
         for i in range(ROW):
             pygame.draw.line(
                 self.background,
-                "#390947",
+                "#0e0e35",  # 390947
                 (i * ROW_WIDTH, 0),
                 (i * ROW_WIDTH, self.background.height),
                 LINE_WIDTH,

@@ -1,4 +1,4 @@
-from re import S
+from pydoc import text
 import numpy as np
 import pygame
 from data.scripts.scene import Scene
@@ -15,21 +15,30 @@ STAR_AMOUNT = 100
 
 class StartUp(Scene):
     def setup(self, **kwargs):
+        pygame.mixer.Sound(self.assets.sfx["startup.mp3"]).play()
         self.big = RandLetter(self, 7)
         self.small = RandLetter(self, 3)
-        self.time = Sprite(
-            self.big.render(datetime.now().strftime("%H:%M"), "white", spacing=5)
+        self.time = self.big.add_text(
+            "time",
+            text=datetime.now().strftime("%H:%M"),
+            spacing=4,
+            speed=10,
+            pos=self.center / (1, 2),
         )
+        self._sep = self.big.add_text("sep", text=":", pos=self.center / (1, 2))
+        # self.time = Sprite(
+        #     self.big.render(datetime.now().strftime("%H:%M"), "white", spacing=5)
+        # )
 
         # self.login = Sprite(self.small.render("Belenetkezés", "white"))
         self._login_spacing = 1
-        self.login = Btn(
-            scene=self,
-            pos=self.center,
-            surf=self.small.render(
-                "Belenetkezés", "white", spacing=self._login_spacing
-            ),
+        self.login_text = self.small.add_text(
+            name="login_text",
+            text="Bejelentkezés",
+            color="white",
+            spacing=self._login_spacing,
         )
+        self.login = Btn(scene=self, pos=self.center, text=self.login_text)
 
         self.background = Shader(
             DEFAULT_VERTEX_SHADER, self.assets.shaders["desktop_bg.glsl"], self.surf
@@ -83,25 +92,22 @@ class StartUp(Scene):
             self._login_spacing = 1.5
             Scene.change_scene("Desktop")
 
-        self.login.surf = self.small.render(
-            "Belenetkezés", "white", spacing=self._login_spacing
-        )
+        self.login_text.spacing = self._login_spacing
+        self.login.surf = self.login_text.sprite.surf
         h = datetime.now().hour
         m = datetime.now().minute
-        self.time.surf = self.big.render(
-            # datetime.now().strftime(f"%H{":" if int(time.time())%2==0 else " "}%M"),
-            f"{h} {m}",
-            "white",
-            spacing=4,
-        )
-        Sprite(
-            self.big.render(":" if int(time.time()) % 2 == 0 else " ", "white")
-        ).render(self.surf, self.center / (1, 2), (0, -0.20))
+        self.time.text = f"{h} {m}"
+
+        # Sprite(
+        #     self.big.render(":" if int(time.time()) % 2 == 0 else " ", "white")
+        # ).render(self.surf, self.center / (1, 2), (0, -0.20))
+        self._sep.text = ":" if int(time.time()) % 2 == 0 else " "
+        self._sep.render(self.surf, (0, -0.20))
 
         norm = (self._login_spacing - 1) / 2
         self.login.update()
         self.login.scale_nrom(norm * 0.3 + 1).render(self.surf)
-        self.time.render(self.surf, self.center / (1, 2), (0, 0))
+        self.time.render(self.surf, (0, 0))
 
         self.stars_tex.update(self.stars_surf.surf)
         self.stars_tex.use(2)
@@ -111,23 +117,27 @@ class StartUp(Scene):
 
 
 class Btn(Sprite):
-    def __init__(self, scene, pos, surf=(20, 20), on_press=lambda: ...):
-        super().__init__(surf)
+    def __init__(self, scene, pos, text=None):
+        size = text.sprite.w, text.sprite.h
+        super().__init__(size, flags=pygame.SRCALPHA)
+        self.text = text
+        # self.text.render(self, self.offset((1, 1)), (0, 0))
         self.scene = scene
         self.pos = pos
-        self.on_press = on_press
         self.callbacks = {
             "hover": [],
             "press": [],
             "release": [],
         }
         self.state = ()
+        self.text.render(self, anchors=(1, 1))
 
     def render(self, surf, flags=0, opacity=1):
-        return super().render(surf, self.pos, (0, 0), flags, opacity)
+        return super().render(surf=surf, pos=self.pos, flags=flags, opacity=opacity)
 
     def update(self):
         self.state = set()
+        self.text.render(self, anchors=(1, 1))
         if self.get_rect(self.pos - self.offset((1, 1))).collidepoint(
             self.scene.mouse["pos"]
         ):

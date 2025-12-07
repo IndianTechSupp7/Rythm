@@ -1,3 +1,4 @@
+import opcode
 import random
 import numpy as np
 import pygame
@@ -6,6 +7,7 @@ from data.scripts.particles import Bit, Circle, Physics, Spark
 from data.scripts.ui.letter import RandLetter
 from data.scripts.utilities import adjuts, bezier, move_towards
 from data.scripts.sprite import Sprite
+from window import ShaderWindow
 
 HIT_THRASHOLD = 20
 RMV_DIST = 75
@@ -49,7 +51,10 @@ class Node:
         self.overlay.surf.set_alpha(0)
 
         self.font = RandLetter(self.game)
-        self.strength = Sprite(self.font.render(strength, color=(0, 0, 0), alpha=60))
+        self.strength = self.font.add_text(
+            name="strength", text=strength, color=(0, 0, 0), opacity=0.3
+        )
+        # self.strength = Sprite(self.font.render(strength, color=(0, 0, 0), alpha=60))
 
     def update(self, dir, current_time, dt):
         if current_time >= self.spawn_time:
@@ -81,7 +86,7 @@ class Node:
             self.overlay.scale_nrom(self.scale)
             self.overlay_alpha = max(self.overlay_alpha - 10, 0)
             # self.overlay.surf.set_alpha(self.overlay_alpha)
-            if self.pos[1] > self.hit_line + RMV_DIST:
+            if self.pos[1] > ShaderWindow.h:
                 self.active = False
                 return True
             if not self.active:
@@ -114,10 +119,12 @@ class Node:
             for _ in range(3):
                 self.game.particleManager.add_particle(
                     Bit(
-                        self.game,
-                        self.pos,
-                        adjuts((0, 0), random.random() * -np.pi, random.randint(1, 3)),
-                        random.random() * 2 + 1,
+                        scene=self.game,
+                        pos=self.pos,
+                        vel=adjuts(
+                            (0, 0), random.random() * -np.pi, random.randint(1, 3)
+                        ),
+                        scale=random.random() * 2 + 1,
                         color=self._color,
                     )
                 )
@@ -133,7 +140,8 @@ class Node:
             # if abs(self.pos[1] - self.hit_line) < 3:
             #     pygame.draw.circle(surf, "blue", self.pos - offset, 15)
             self.sprite.render(surf, self.pos - offset)
-            self.strength.render(surf, self.pos - offset)
+            self.strength.pos = self.pos - offset
+            self.strength.render(surf)
             self.overlay.render(surf, self.pos - offset, opacity=self.overlay_alpha)
         # pygame.draw.circle(surf, "red", self.pos - offset, 3)
         # pygame.draw.rect(surf, "red", self.rect)

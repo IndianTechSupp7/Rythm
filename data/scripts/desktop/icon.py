@@ -7,6 +7,7 @@
 }
 """
 
+from turtle import color
 import numpy as np
 import pygame
 
@@ -34,15 +35,31 @@ class Icon:
         self.title = self.settings.get("title", "No Name")
         self.progress = self.settings.get("progress", 0)
 
-        self.locked_txt = "".join(["#" if i != " " else " " for i in self.title])
+        self.font = RandLetter(self.scene)
 
-        p = int(self.progress * len(self.title))
-        render_title = self.title[:p] + self.locked_txt[p:]
+        self.dm_title = self.title
+
+        if len(self.dm_title) > 15 and " " in self.dm_title:
+            text: list = self.dm_title.split(" ")
+            text.insert(int(len(text) / 2), "\n")
+            self.dm_title = " ".join(text)
+        self.locked_txt = "".join(
+            ["#" if i not in [" ", "\n"] else i for i in self.dm_title]
+        )
+
+        p = int(self.progress * len(self.dm_title))
+        render_title = self.dm_title[:p] + self.locked_txt[p:]
         self.img: Sprite = self.settings.get("img", Sprite(TILE_PADDING))
 
-        self.pos = np.array((0, 0))
-        self.font = RandLetter(self.scene, 1)
-        self.text_sprite = Sprite(self.font.render(render_title, "white", "gray"))
+        self.pos = np.array((TILE_WIDTH, TILE_HEIGTH)) * self.tile_pos
+        self.font.add_text(
+            "title", text=render_title, speed=10, secondary=(255, 255, 255, 50)
+        )
+        # if self.font["title"].full_size[0] > TILE_WIDTH and " " in render_title:
+        #     text: list = render_title.split(" ")
+        #     text.insert(int(len(text) / 2), "\n")
+        #     self.font["title"].text = " ".join(text)
+
         self.rect = self.img.get_rect().inflate(10, 10)
 
         self.dragging = False
@@ -52,14 +69,20 @@ class Icon:
 
     def activate(self): ...
 
-    def update(self, w, h, dt):
-        p = int(self.progress * len(self.title))
-        render_title = self.title[:p] + self.locked_txt[p:]
-        self.text_sprite = Sprite(self.font.render(render_title, "white", "gray"))
+    def update(self, dt):
+        p = int(self.progress * len(self.dm_title))
+        render_title = self.dm_title[:p] + self.locked_txt[p:]
+        # if self.font["title"].full_size[0] > TILE_WIDTH and " " in render_title:
+        #     text: list = render_title.split(" ")
+        #     text.insert(int(len(text) / 2), "\n")
+        #     self.font["title"].text = " ".join(text)
+        # else:
+        self.font["title"].text = render_title
 
-        self.double_clikc = max(0, self.double_clikc - 2  * dt)
-        self.pos = np.array((w, h)) * self.tile_pos
+        self.double_clikc = max(0, self.double_clikc - 2 * dt)
+        self.pos = np.array((TILE_WIDTH, TILE_HEIGTH)) * self.tile_pos
         self.rect.center = self.pos + np.array((16, 16))
+        pressed = False
         if self.rect.collidepoint(self.scene.mouse["pos"]) or self.dragging:
             if self.scene.mouse["press"][0]:
                 self.offset = self.scene.mouse["pos"] - self.pos
@@ -69,20 +92,24 @@ class Icon:
                     if not pygame.key.get_pressed()[pygame.K_LSHIFT]:
                         Icon.selected = []
                     Icon.selected.append(self)
+                    self.double_clikc += 2
+                pressed = True
             if self in Icon.selected:
                 if self.scene.mouse["hold"][0]:
                     if (np.abs(self.hold_offset) > (1, 1)).all():
                         self.dragging = True
                     else:
                         self.hold_offset += self.scene.mouse["rel"]
+
         if self.dragging:
             self.pos = self.scene.mouse["pos"] - self.offset
             self.hold_offset = np.array((0, 0))
+            self.double_clikc = 0
 
         if self.scene.mouse["release"][0]:
             self.dragging = False
 
-            tile_pos = tuple([round(i) for i in self.pos / (w, h)])
+            tile_pos = tuple([round(i) for i in self.pos / (TILE_WIDTH, TILE_HEIGTH)])
             if not tile_pos in Icon.ipos:
                 # print(tile_pos, Icon.ipos)
                 Icon.ipos.remove(self.tile_pos)
@@ -97,6 +124,7 @@ class Icon:
                 # )
         if self.double_clikc > 3:
             self.on_press()
+        return pressed
 
     def render(self, surf):
         render_pos = self.pos + np.array((16, 16))
@@ -112,7 +140,9 @@ class Icon:
             )
             # pygame.draw.rect(surf, ("#aee3ff81"), self.rect)
         self.img.render(surf, render_pos, (0, 0))
-        self.text_sprite.render(surf, render_pos, (0, 4))
+        self.font["title"].pos = render_pos + (0, 16)
+        self.font["title"].render(surf, (0, 1))
+        #pygame.draw.circle(surf, "red", self.font["title"].pos, 4)
 
     @classmethod
     def reset(cls):
@@ -129,9 +159,9 @@ class Icon:
         cls.ipos.add(settings["pos"])
 
     @classmethod
-    def update_icons(cls, w, h, dt):
+    def update_icons(cls, dt):
         for icon in cls.icons:
-            icon.update(w, h, dt)
+            icon.update(dt)
 
     @classmethod
     def render_icons(cls, surf):
