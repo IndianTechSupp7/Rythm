@@ -2,6 +2,8 @@
     "song": "Mindenki táncol.mp3",
     "bpm": 117.45383522727273,
     "sample_rate": 22050,
+    "color" : "#501b26",
+    "bg" : "#17080b",
     "tracks": {
         "Kick": [
             {

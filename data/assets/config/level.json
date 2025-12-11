@@ -11,51 +11,27 @@
         "cym": 0.0,
         "snr": 0.0
     },
-    "startup": true,
+    "startup": false,
+    "finished": false,
     "songs": {
-        "Angeleyes": [
-            5,
-            1,
-            0
-        ],
         "Belehalok": [
-            11,
-            1,
-            0
-        ],
-        "Só Fé": [
-            1,
-            1,
-            0
+            6,
+            3,
+            1.1067193675889329
         ],
         "Rakpart": [
-            3,
-            3,
-            0
-        ],
-        "Blame": [
-            8,
+            7,
             1,
             0
         ],
         "Porszem": [
-            8,
-            6,
-            0.0
-        ],
-        "greedy": [
-            16,
-            3,
-            0
-        ],
-        "Claw Marks": [
-            1,
-            3,
-            0.0
+            11,
+            2,
+            1.0978253269002167
         ],
         "Szerelemre születtem": [
-            14,
-            5,
+            13,
+            6,
             0
         ],
         "Amikor Feladnád": [
@@ -63,45 +39,100 @@
             1,
             0
         ],
-        "Team": [
-            11,
-            3,
-            0.0
-        ],
         "Maradok távol": [
-            6,
-            3,
-            0.0
-        ],
-        "Táncol Velem A Világ": [
-            14,
-            3,
-            0
-        ],
-        "Mindenki táncol": [
-            12,
-            6,
-            0
-        ],
-        "Szívedből minden kell": [
             3,
             1,
             0
         ],
-        "Ahol A Május Földet Ér": [
-            9,
+        "Mindenki táncol": [
+            5,
+            1,
+            1.0988037217545414
+        ],
+        "Szívedből minden kell": [
             3,
+            6,
             0.0
         ],
-        "So Am I": [
-            2,
-            5,
-            0
+        "Ahol A Május Földet Ér": [
+            17,
+            3,
+            1.109967992684042
         ],
-        "Ghost - Square Hammer": [
+        "Bent a neved": [
+            11,
+            6,
+            0.0
+        ],
+        "Mit Mondjak Még？": [
+            8,
+            4,
+            0.7235814679854242
+        ],
+        "Anyám mondta": [
+            10,
+            4,
+            1.1075725406935597
+        ],
+        "SSD": [
+            1,
+            3,
+            1.103720128110372
+        ],
+        "Last Christmas": [
+            3,
+            4,
+            1.1086342695794322
+        ],
+        "Geronimos Cadillac": [
+            9,
+            6,
+            1
+        ],
+        "Hate Me": [
+            1,
             5,
+            1.1098696461824953
+        ],
+        "Dark Necessities": [
+            13,
+            4,
+            1
+        ],
+        "no tears left to cry": [
+            17,
             5,
-            0
+            1.0663360198388097
+        ],
+        "Tears": [
+            6,
+            5,
+            1
+        ],
+        "First Time": [
+            9,
+            1,
+            1
+        ],
+        "Wait and Bleed": [
+            15,
+            6,
+            1.104446348662287
+        ],
+        "Nuttin Nuh Go So": [
+            1,
+            1,
+            1
+        ],
+        "BAGIRA": [
+            1,
+            7,
+            1.1111111111111112
+        ],
+        "LOSE CONTROL (feat. Gez)": [
+            7,
+            6,
+            1.0674878111367718
         ]
     }
 }

@@ -2,6 +2,8 @@
     "song": "Belehalok.mp3",
     "bpm": 86.1328125,
     "sample_rate": 22050,
+    "color": "#3d3e4d",
+    "bg": "#090a10",
     "tracks": {
         "Kick": [
             {

@@ -2,6 +2,18 @@
     "song": "Mit Mondjak M\u00e9g\uff1f.mp3",
     "bpm": 112.34714673913044,
     "sample_rate": 22050,
+    "max": {
+        "tom": 1.0,
+        "kick": 1.0,
+        "cym": 1.0,
+        "snr": 0.8
+    },
+    "min": {
+        "tom": 0.4,
+        "kick": 0.3,
+        "cym": 0.3,
+        "snr": 0.0
+    },
     "tracks": {
         "Kick": [
             {

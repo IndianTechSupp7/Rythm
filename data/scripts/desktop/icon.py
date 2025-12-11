@@ -13,6 +13,7 @@ import pygame
 
 from data.scripts.sprite import Sprite
 from data.scripts.ui.letter import RandLetter
+from data.scripts.ui.progressbar import Bar, SmoothBar
 
 PADDING = np.array((3, 3))
 TILE_WIDTH = 32
@@ -67,8 +68,6 @@ class Icon:
         self.double_clikc = 0
         self.hold_offset = np.array((0, 0))
 
-    def activate(self): ...
-
     def update(self, dt):
         p = int(self.progress * len(self.dm_title))
         render_title = self.dm_title[:p] + self.locked_txt[p:]
@@ -116,8 +115,8 @@ class Icon:
                 self.tile_pos = tile_pos
                 Icon.ipos.add(self.tile_pos)
                 data = self.scene.assets.configs["level"]
-                data["songs"][self.title.split(".")[0]][0] = self.tile_pos[0]
-                data["songs"][self.title.split(".")[0]][1] = self.tile_pos[1]
+                data["songs"][".".join(self.title.split(".")[:-1])][0] = self.tile_pos[0]
+                data["songs"][".".join(self.title.split(".")[:-1])][1] = self.tile_pos[1]
                 self.scene.assets.save_config("level", data)
                 # write_json(
                 #     self.scene.assets.BASE_ASSETS_FOLDER + "/config/level.json", data
@@ -142,7 +141,7 @@ class Icon:
         self.img.render(surf, render_pos, (0, 0))
         self.font["title"].pos = render_pos + (0, 16)
         self.font["title"].render(surf, (0, 1))
-        #pygame.draw.circle(surf, "red", self.font["title"].pos, 4)
+        # pygame.draw.circle(surf, "red", self.font["title"].pos, 4)
 
     @classmethod
     def reset(cls):
@@ -167,3 +166,37 @@ class Icon:
     def render_icons(cls, surf):
         for icon in cls.icons:
             icon.render(surf)
+
+
+class ProgressIcon(Icon):
+    def __init__(self, scene, **settings):
+        super().__init__(scene, settings)
+        self.load_progress = self.scene.game.current_progress
+        self.bar = SmoothBar(self.scene, scale=(32, 5), value=self.load_progress)
+
+    def update(self, dt):
+        super().update(dt)
+        if self.load_progress != 1:
+            self.load_progress = self.scene.game.current_progress
+        self.bar.value = self.load_progress
+        self.bar.update(dt)
+
+    def render(self, surf):
+        render_pos = self.pos + np.array((16, 16))
+        if self in Icon.selected:
+            pygame.draw.rect(
+                surf,
+                (174, 227, 255, 100),
+                (
+                    *(self.pos),
+                    32,
+                    42,
+                ),
+            )
+            # pygame.draw.rect(surf, ("#aee3ff81"), self.rect)
+        self.img.render(surf, render_pos, (0, 0))
+        if not self.load_progress or self.load_progress % 1:
+            self.bar.render(surf, render_pos + (0, 16), anchors=(0, 1))
+        else:
+            self.font["title"].pos = render_pos + (0, 16)
+            self.font["title"].render(surf, (0, 1))

@@ -3,6 +3,7 @@ import numpy as np
 import pygame
 from data.scripts.desktop.desktop import Menu, Table
 from data.scripts.ui import Bar
+from data.scripts.ui.progressbar import SmoothBar
 from data.scripts.utilities import bezier, lerp, clamp
 from data.scripts.sprite import Sprite
 from data.scripts.ui import RandLetter
@@ -56,7 +57,7 @@ class UI:
         # self.target_title_pos = np.array((self.center[0], 15))
         # self.scale = 1
 
-        self.bar = Bar(
+        self.bar = SmoothBar(
             self.game,
             self.music.full_time,
             0,
@@ -121,6 +122,7 @@ class UI:
             ]
         )
         self.bar.value = self.music.full_time
+        self.bar.update(self.game.dt)
 
         # self.title_pos[0] = move_towards(
         #     self.title_pos[0], self.target_title_pos[0], 100, self.game.dt

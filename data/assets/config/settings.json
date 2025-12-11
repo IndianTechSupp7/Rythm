@@ -3,5 +3,5 @@
     "display_mode": "windowed",
     "fps": true,
     "hitline": false,
-    "shaders": false
+    "shaders": true
 }

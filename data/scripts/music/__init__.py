@@ -61,7 +61,6 @@ class Music(Scene):
         self.game.set_cursor(False)
 
         self.particleManager = Manager(self)
-        self.circleParticleManager = Manager(self)
         pygame.mixer.music.set_volume(self.game.master_volume)
 
         self.menu = Menu(self)
@@ -159,8 +158,10 @@ class Music(Scene):
         self.in_tutorial = True
 
         self.ui = UI(self)
-        self.background = pygame.Surface(self.surf.get_size())
-        self.cicrles = pygame.Surface(self.surf.get_size())
+        self.bg = self.current_beatmap.get("bg", "#0a0a2e")
+        self.background = pygame.Surface(
+            self.surf.get_size(), pygame.SRCALPHA, 32
+        ).convert_alpha()
         self.setup_bg()
         self.bg_shader = Shader(
             DEFAULT_VERTEX_SHADER, self.assets.shaders["music_bg.glsl"], self.surf
@@ -169,8 +170,7 @@ class Music(Scene):
             self.assets.images["noise.png"], self.bg_shader.ctx
         )
         self.bg_texture = Texture(self.background, self.bg_shader.ctx)
-        self.cicrles_texture = Texture(self.cicrles, self.bg_shader.ctx)
-        self.secondary = "#25246b"
+        self.secondary = pygame.Color(self.bg).lerp((255, 255, 255), 0.5)
         self._prev_color = (0, 0, 0, 0)
         self._current_color = (255, 255, 255, 50)
 
@@ -313,8 +313,6 @@ class Music(Scene):
 
         self.particleManager.update(dt)
         self.particleManager.render(self.surf, self.render_offset)
-        self.circleParticleManager.update(dt)
-        self.circleParticleManager.render(self.cicrles, self.render_offset)
 
         self.tom.render(self.surf, self.render_offset)
         self.kick.render(self.surf, self.render_offset)
@@ -329,10 +327,8 @@ class Music(Scene):
         if self.game.shaders:
             self.noise_texture.use(1)
             self.bg_texture.use(2)
-            self.cicrles_texture.use(3)
             self.bg_shader.send("noiseTexture", 1)
             self.bg_shader.send("bgTexture", 2)
-            self.bg_shader.send("circlesTexture", 3)
             self.bg_shader.send("strength", self._blur_stength)
             self.bg_shader.send("time", self.current_time)
             return self.bg_shader.render()
@@ -343,12 +339,14 @@ class Music(Scene):
         ROW_WIDTH = self.background.width / ROW
         LINE_WIDTH = 1
 
-        self.background.fill("#0a0a2e")  # 1f102a
+        self.background.fill(self.bg)  # 1f102a
+        line_surf = pygame.Surface(self.background.get_size(), pygame.SRCALPHA)
         for i in range(ROW):
             pygame.draw.line(
-                self.background,
-                "#0e0e35",  # 390947
+                line_surf,
+                (255, 255, 255, 10),  # 390947
                 (i * ROW_WIDTH, 0),
                 (i * ROW_WIDTH, self.background.height),
                 LINE_WIDTH,
             )
+        self.background.blit(line_surf, (0, 0))

@@ -20,6 +20,7 @@ class Desktop(Scene):
     def __init__(self):
         super().__init__(display_scale=0.5)
         self.desktop = DesktopGrid(self)
+        self.game.on_file_drop.append(self.desktop.on_file_drop)
         if self.assets.configs["level"]["startup"]:
             self.assets.save_config("level", {"startup": False})
             self.dialogs = [
@@ -27,7 +28,7 @@ class Desktop(Scene):
                     self,
                     self.center,
                     (150, 100),
-                    msg="Tönkretettem \n a kedvenc zene fájljaidat \n HAHAHAH",
+                    msg="Tönkretettem \n a kedvenc zenéidet \n HAHAHAH",
                     max_width=150,
                     title="vírus.exe",
                     on_press=lambda: self.dialogs.append(

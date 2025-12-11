@@ -2,6 +2,8 @@
     "song": "Any\u00e1m mondta.mp3",
     "bpm": 78.30255681818181,
     "sample_rate": 22050,
+    "color": "#ea6262",
+    "bg": "#2f0f0f",
     "tracks": {
         "Kick": [
             {

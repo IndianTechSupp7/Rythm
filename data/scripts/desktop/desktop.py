@@ -1,11 +1,14 @@
+import os
 from pydoc import text
+import random
 import time
 from turtle import color
 import numpy as np
 import pygame
 from sympy import sec
 from window import Window
-from data.scripts.desktop.icon import Icon
+from data.scripts.desktop.dialog import Dialog
+from data.scripts.desktop.icon import Icon, ProgressIcon
 from data.scripts.scene import Scene
 from data.scripts.sprite import Sprite
 from data.scripts.ui import Slider, SpriteBtn
@@ -22,6 +25,7 @@ class DesktopGrid:
         self.assets = self.scene.assets
 
         Icon.scene = self.scene
+        self.finisehd = self.scene.assets.configs["level"]["finished"]
 
         # self.surf = Sprite(
         #     tuple(np.array(self.scene.size) * 0.5), flags=pygame.SRCALPHA
@@ -40,10 +44,42 @@ class DesktopGrid:
 
         self._prev_selected = Icon.selected.copy()
 
+    def on_file_drop(self, path):
+        file_name = os.path.basename(path)
+        name, ext = os.path.splitext(file_name)
+        if ext.lower() == ".mp3":
+            pos = (
+                np.array(pygame.mouse.get_pos()) / (32, 42) * self.scene.display_scale
+            ).tolist()
+            # data = self.assets.configs["level"]
+            # data["songs"] = {**self.assets.configs["level"]["songs"], name : [*pos, 1]}
+            self.assets.save_config(
+                "level/songs",
+                {name: [*pos, 1]},
+            )
+            on_press = lambda: (
+                self.open_music(name)
+                if self.assets.beatmaps.get(name + ".json", False)
+                else ...
+            )
+            icon = ProgressIcon(
+                self.scene,
+                **{
+                    "title": file_name,
+                    "pos": tuple(pos),
+                    "progress": 0,
+                    "img": Sprite(self.scene.assets.images["ext"]["mp3.png"]),
+                    "on_press": on_press,
+                }
+            )
+            Icon.icons.append(icon)
+            Icon.ipos.add(tuple(pos))
+            self.scene.game.generator.start_generation(path)
+
     def update_song_progress(self):
         data = self.scene.assets.configs["level"]["songs"]
         for song in Icon.icons:
-            song.progress = data["".join(song.title.split(".")[:-1])][2]
+            song.progress = data[".".join(song.title.split(".")[:-1])][2]
 
     def open_music(self, music):
         self.scene.game.current_song_name = music
@@ -59,6 +95,22 @@ class DesktopGrid:
         # self.mouse = self.scene.mouse
         # self.mouse["pos"] = np.array(self.mouse["pos"]) * 0.5
         Icon.update_icons(dt)
+        if all([i.progress >= 1 for i in Icon.icons]) and not self.finisehd:
+            self.finisehd = True
+            self.scene.assets.save_config("level", {"finished": True})
+            self.scene.dialogs.append(
+                Dialog(
+                    self.scene,
+                    self.scene.center
+                    - (
+                        random.randint(-50, 50),
+                        random.randint(-50, 50),
+                    ),
+                    (150, 80),
+                    msg="Gratulálok, remélem azért \n tanultál valamit az esetből",
+                    title="vírus.exe",
+                ).setup()
+            )
         if self.mouse["press"][0] and self._prev_selected == Icon.selected:
             Icon.selected = []
         self._prev_selected = Icon.selected.copy()

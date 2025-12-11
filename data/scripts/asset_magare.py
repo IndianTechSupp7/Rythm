@@ -15,6 +15,18 @@ def add_item(d, path, item):
         current = current[key]
 
 
+def update_dict(d, path, dct):
+    keys = [k for k in path.strip("\\").split("\\") if k]  # split path
+    current = d
+    for key in keys:
+        if key == keys[-1]:
+            current[key].update(dct)
+            continue
+        if key not in current:
+            current[key] = {}
+        current = current[key]
+
+
 class AssetManager:
     BASE_ASSETS_FOLDER = "data\\assets"
 
@@ -44,13 +56,20 @@ class AssetManager:
         self.beatmaps = {
             i.split("\\")[-1]: get_json(i) for i in self.search(("json"), "\\beatmaps")
         }
+        self.sfx = {i.split("\\")[-1]: i for i in self.search((".mp3"), "/sfx")}
 
-    def save_config(self, name, data):
+    def refersh_config(self, name):
         path = f"{self.BASE_ASSETS_FOLDER}/config/{name}.json"
-        prev = self.configs[name]
-        prev.update(data)
-        write_json(path, prev)
         self.configs[name] = get_json(path)
+
+    def save_config(self, path, data):
+        name, *path = path.split("/")
+        file_path = f"{self.BASE_ASSETS_FOLDER}/config/{name}.json"
+        prev = self.configs[name].copy()
+        update_dict(prev, "\\".join(path), data)
+        #prev.update(data)
+        write_json(file_path, prev)
+        self.configs[name] = get_json(file_path)
 
     def search(self, exts: list | tuple, base=""):
         path = self.BASE_ASSETS_FOLDER + base

@@ -2,6 +2,8 @@
     "song": "Amikor Feladn\u00e1d.mp3",
     "bpm": 161.4990234375,
     "sample_rate": 22050,
+    "color" : "#b4dd8d",
+    "bg" : "#0f1807",
     "max": {
         "tom": 0.8,
         "kick": 1.0,

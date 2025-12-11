@@ -2,6 +2,8 @@
     "song": "Szerelemre sz\u00fclettem.mp3",
     "bpm": 123.046875,
     "sample_rate": 22050,
+    "color" : "#c964c8",
+    "bg" : "#441840",
     "max": {
         "tom": 0.6,
         "kick": 1.0,

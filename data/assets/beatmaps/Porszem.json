@@ -2,6 +2,7 @@
     "song": "Porszem.mp3",
     "bpm": 117.45383522727273,
     "sample_rate": 22050,
+    "color" : "#0f6e3f",
     "tracks": {
         "Kick": [
             {

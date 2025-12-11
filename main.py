@@ -11,6 +11,7 @@ from window.shader import ShaderWindow
 from data.scripts.sprite import Sprite
 from data.scripts.startup import StartUp
 from data.scripts.ui.letter import RandLetter
+from data.scripts.generate import BeatmapGenerator
 
 
 class Game(ShaderWindow):
@@ -29,6 +30,9 @@ class Game(ShaderWindow):
 
         # self.input = Input(self)
         self.center = np.array((self.w / 2, self.h / 2))
+        self.generator = BeatmapGenerator(
+            "data/assets/beatmaps", "data/assets/sfx", "data/temp"
+        )
 
         Scene.init_scene_manager(self)
 
@@ -50,6 +54,8 @@ class Game(ShaderWindow):
             pos=(10, 10),
             anchors=(1, 1),
         )
+        self._prev_status = None
+        self.current_progress = 0
 
         # Scene.change_scene("Desktop")
 
@@ -76,6 +82,11 @@ class Game(ShaderWindow):
             self.cursor.scale_nrom(2).render(
                 self.display, pygame.mouse.get_pos(), (1, 1)
             )
+        status = self.generator.check_status()
+        if status["status"] == "COMPLETED" and self._prev_status != status["status"]:
+            self.assets.reset_beatmaps()
+            self._prev_status = status["status"]
+        self.current_progress = status["progress"]
         # pygame.draw.circle(self.display, "red", pygame.mouse.get_pos(), 10)
 
 

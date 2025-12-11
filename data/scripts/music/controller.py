@@ -77,10 +77,11 @@ class Btn:
         self.rect: pygame.Rect = self.current_state.get_rect(
             self.pos - self.current_state.offset((1, 1))
         )
-        for node in self.nodes:
+        for node in Node.get_collide_rects(self.nodes):
             if self.rect.inflate(*BBOX).colliderect(node.rect):
                 perfect = abs(node.pos[1] - self.hit_line) <= HIT_LINE_TOLERANCE
                 node.collide(perfect)
+                return
 
     def reset(self):
         self.press = False
@@ -89,8 +90,6 @@ class Btn:
             self.pos - self.current_state.offset((1, 1))
         )
 
-    def update(self, offset, nodes):
-        self.nodes = nodes
 
     def render(self, surf, offset):
         self.current_state.render(surf, self.pos - offset, self.anchor_point)
@@ -177,10 +176,6 @@ class Controller:
                     self.nodes.pop(i)
                 else:
                     node.rect.centerx = self.start_pos[0]
-            # if self.nodes[-1].triggered:
-            #     self.finished = True
-            nodes = Node.get_collide_rects(self.nodes)
-            self.btn.update((-self.start_pos[0], 0), nodes)
         else:
             if self.btn.press:
                 self.opacity = 1

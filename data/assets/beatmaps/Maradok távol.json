@@ -2,6 +2,7 @@
     "song": "Maradok t\u00e1vol.mp3",
     "bpm": 107.666015625,
     "sample_rate": 22050,
+    "color" : "#c77b38",
     "tracks": {
         "Kick": [
             {

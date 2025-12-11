@@ -2,6 +2,7 @@
     "song": "Ahol A M\u00e1jus F\u00f6ldet \u00c9r.mp3",
     "bpm": 103.359375,
     "sample_rate": 22050,
+    "color" : "#79b3d9",
     "tracks": {
         "Kick": [
             {

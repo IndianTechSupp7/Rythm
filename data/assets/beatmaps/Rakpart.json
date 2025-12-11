@@ -2,6 +2,7 @@
     "song": "Rakpart.mp3",
     "bpm": 117.45383522727273,
     "sample_rate": 22050,
+    "color" : "#ffc636",
     "tracks": {
         "Kick": [
             {

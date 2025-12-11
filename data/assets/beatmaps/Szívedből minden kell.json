@@ -2,6 +2,7 @@
     "song": "Sz\u00edvedb\u0151l minden kell.mp3",
     "bpm": 123.046875,
     "sample_rate": 22050,
+    "color" : "#b682ee",
     "tracks": {
         "Kick": [
             {

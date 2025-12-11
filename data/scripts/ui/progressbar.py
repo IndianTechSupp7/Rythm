@@ -1,17 +1,17 @@
 import re
 import pygame
 from data.scripts.sprite import Sprite
-from data.scripts.utilities import clamp
+from data.scripts.utilities import clamp, lerp, move_towards
 
 
 class Bar(Sprite):
     def __init__(
         self,
         scene,
-        value,
-        min,
-        max,
-        scale,
+        value=0,
+        min=0,
+        max=1,
+        scale=(60, 10),
         color="white",
         secondary=(255, 255, 255, 30),
     ):
@@ -45,3 +45,36 @@ class Bar(Sprite):
         self.clear(self.secondary)
         self.blit(self.srf, (0, 0))
         return super().render(surf, pos, anchors, flags, opacity)
+
+
+class SmoothBar(Bar):
+    def __init__(
+        self,
+        scene,
+        value=0,
+        min=0,
+        max=1,
+        scale=(60, 10),
+        color="white",
+        secondary=(255, 255, 255, 30),
+    ):
+        super().__init__(scene, value, min, max, scale, color, secondary)
+        self.prev_t = 0
+
+    def update(self, dt):
+        self.t = move_towards(self.t, self.value, 1, dt)
+        if self.t != self.prev_t:
+            self.prev_t = self.t
+            self.srf = pygame.Surface((int(self.scale[0] * self.t), self.scale[1]))
+            self.srf.fill(self.color)
+
+    @property
+    def value(self):
+        return self._value
+
+    @value.setter
+    def value(self, val):
+        self._value = clamp(val, self.min, self.max)
+        # self.t = self._get_value()
+        # self.srf = pygame.Surface((int(self.scale[0] * self.t), self.scale[1]))
+        # self.srf.fill(self.color)

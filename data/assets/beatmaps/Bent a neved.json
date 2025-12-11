@@ -1,9 +1,20 @@
 {
     "song": "Bent a neved.mp3",
     "bpm": 80.74951171875,
-    "max": {"tom": 0.6, "kick": 0.2, "cym": 0.5, "snr": 0.4},
-    "min": {"tom": 0.0, "kick": 0.0, "cym": 0.0, "snr": 0.0},
+    "max": {
+        "tom": 0.6,
+        "kick": 0.2,
+        "cym": 0.5,
+        "snr": 0.4
+    },
+    "min": {
+        "tom": 0.0,
+        "kick": 0.0,
+        "cym": 0.0,
+        "snr": 0.0
+    },
     "sample_rate": 22050,
+    "color": "#c71b1b",
     "tracks": {
         "Kick": [
             {
